@@ -180,12 +180,19 @@ async def test_api_key(req: TestKeyRequest):
                     return {
                         "status": "quota_exceeded",
                         "latency_ms": latency_ms,
-                        "message": "Key validated, but Monthly Basic Quota on RapidAPI is exceeded."
+                        "message": "Key validated, but Monthly Free Quota on RapidAPI is exhausted (HTTP 429)."
                     }
                 return {
                     "status": "success",
                     "latency_ms": latency_ms,
                     "message": f"Successfully authenticated with {host} ({latency_ms} ms)"
+                }
+            elif resp.status_code == 429 or "quota" in resp.text.lower() or "exceeded" in resp.text.lower():
+                runtime_config["quota_exceeded"] = True
+                return {
+                    "status": "quota_exceeded",
+                    "latency_ms": latency_ms,
+                    "message": "RapidAPI Free Monthly Quota exhausted (HTTP 429). Enter a new free RapidAPI key or use Dynamic Engine."
                 }
             elif resp.status_code in (401, 403):
                 return JSONResponse(status_code=resp.status_code, content={
@@ -233,7 +240,10 @@ async def get_live_train(
                         "x-rapid-api": "rapid-api-database"
                     }
                     res = await client.get(url, headers=headers, params=params)
-                    if res.status_code == 200:
+                    if res.status_code == 429 or "quota" in res.text.lower() or "exceeded" in res.text.lower():
+                        runtime_config["quota_exceeded"] = True
+                        print(f"[LiveServer] RapidAPI quota exceeded (HTTP 429) for {clean_no}. Using dynamic route.")
+                    elif res.status_code == 200:
                         raw_data = res.json()
                         normalized = normalize_indian_railway_irctc(clean_no, raw_data)
                         if normalized:
@@ -246,7 +256,10 @@ async def get_live_train(
                     params = {"trainNo": clean_no, "startDay": "0"}
                     headers = {"X-RapidAPI-Key": active_key, "X-RapidAPI-Host": active_host}
                     res = await client.get(url, headers=headers, params=params)
-                    if res.status_code == 200:
+                    if res.status_code == 429 or "quota" in res.text.lower() or "exceeded" in res.text.lower():
+                        runtime_config["quota_exceeded"] = True
+                        print(f"[LiveServer] RapidAPI quota exceeded for {clean_no}. Using dynamic route.")
+                    elif res.status_code == 200:
                         raw_data = res.json()
                         raw_text = res.text.lower()
                         if "quota" in raw_text or "exceeded" in raw_text:
@@ -534,6 +547,8 @@ def build_real_db_train(train_no: str) -> Optional[Dict[str, Any]]:
             "current_pos_idx": pos_idx,
             "last_updated": time.strftime("%H:%M:%S"),
             "data_source": "ALL_INDIA_RAIL_DB",
+            "quota_alert": runtime_config["quota_exceeded"],
+            "quota_message": "RapidAPI Free Monthly Quota (50 calls) exhausted. Telemetry powered by RAIL RAKSHAK Kinematic Engine & All-India Database.",
             "stops": stops
         }
     except Exception as e:
@@ -641,6 +656,8 @@ def generate_dynamic_fallback(train_no: str) -> Dict[str, Any]:
             "current_pos_idx": preset["pos"],
             "last_updated": time.strftime("%H:%M:%S"),
             "data_source": "DYNAMIC_KINEMATIC",
+            "quota_alert": runtime_config["quota_exceeded"],
+            "quota_message": "RapidAPI Free Monthly Quota (50 calls) exhausted. Telemetry powered by RAIL RAKSHAK Kinematic Engine & All-India Database.",
             "stops": stops
         }
 
@@ -657,6 +674,8 @@ def generate_dynamic_fallback(train_no: str) -> Dict[str, Any]:
         "current_pos_idx": 1,
         "last_updated": time.strftime("%H:%M:%S"),
         "data_source": "DYNAMIC_KINEMATIC",
+        "quota_alert": runtime_config["quota_exceeded"],
+        "quota_message": "RapidAPI Free Monthly Quota (50 calls) exhausted. Telemetry powered by RAIL RAKSHAK Kinematic Engine & All-India Database.",
         "stops": [
             {"code": "NDLS", "name": "New Delhi", "km": 0, "scheduled_arrival": "06:10", "scheduled_departure": "06:10", "actual_arrival": "06:10", "delay": 0, "platform": "5", "passed": True},
             {"code": "CNB", "name": "Kanpur Central", "km": 440, "scheduled_arrival": "11:38", "scheduled_departure": "11:42", "actual_arrival": "11:38", "delay": 0, "platform": "4", "passed": True},
