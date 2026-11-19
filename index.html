@@ -256,6 +256,7 @@
                     <span id="trackMovingStatus">IN MOTION · 85 km/h</span>
                   </span>
                   <span id="trackPunctualityBadge" class="px-3 py-1 rounded-xl text-xs font-black bg-emerald-50 text-emerald-700 border border-emerald-200">Right Time</span>
+                  <span id="trackDataSourceBadge" class="px-2.5 py-1 rounded-xl text-xs font-bold border bg-emerald-50 text-emerald-700 border-emerald-300">LIVE FEED</span>
                 </div>
                 <h3 id="trackTrainTitle" class="text-xl sm:text-2xl font-black text-slate-900 mt-2">12004 - Lucknow Swarna Shatabdi</h3>
                 <p id="trackTrainRoute" class="text-xs text-slate-500 mt-0.5 font-medium"></p>
@@ -2639,8 +2640,10 @@
           currentLiveTrain = liveData;
           renderLiveTelemetry(liveData);
           if (liveData.quota_alert) {
-            el('liveTrackAlertMsg').textContent = "Notice: RapidAPI basic quota reached on this key. Streaming live coordinates via Indian Railways route database.";
+            el('liveTrackAlertMsg').innerHTML = `<span><strong>RapidAPI Free Monthly Quota Exceeded (HTTP 429):</strong> The basic 50-request limit on your current key was exhausted. RAIL RAKSHAK has seamlessly engaged the <strong>Physics Kinematic Simulation & All-India Database</strong> so your live tracking and ETA forecasting remain active without disruption. <button onclick="openLiveConfigModal()" class="underline font-black text-amber-900 ml-1 hover:text-black">Update API Key ⚡</button></span>`;
             el('liveTrackAlert').classList.remove('hidden');
+          } else {
+            el('liveTrackAlert').classList.add('hidden');
           }
         } else if (byNo[trainNo]) {
           renderTrackingFromCatalog(byNo[trainNo]);
@@ -2674,6 +2677,13 @@
       const dl = t.current_delay || 0;
       el('trackPunctualityBadge').className = `px-3 py-1 rounded-xl text-xs font-black border ${dl <= 5 ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-amber-50 text-amber-700 border-amber-200'}`;
       el('trackPunctualityBadge').textContent = dl <= 0 ? 'Right Time' : `Late (+${dl} min)`;
+
+      const isLive = t.data_source === 'LIVE_IRCTC_NTES';
+      const srcBadge = el('trackDataSourceBadge');
+      if (srcBadge) {
+        srcBadge.className = `px-2.5 py-1 rounded-xl text-xs font-bold border ${isLive ? 'bg-emerald-50 text-emerald-700 border-emerald-300' : 'bg-purple-50 text-purple-700 border-purple-200'}`;
+        srcBadge.innerHTML = isLive ? `<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 live-dot mr-1"></span> LIVE NTES SATELLITE FEED` : `⚡ DYNAMIC KINEMATIC SIMULATION (DB)`;
+      }
 
       el('trackCurrentStation').textContent = t.current_station || 'En Route';
       el('trackAheadDistance').textContent = t.ahead_distance || `${t.next_station ? 'Ahead to ' + t.next_station : 'In Transit'}`;
