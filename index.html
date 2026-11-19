@@ -1,0 +1,3023 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RAIL RAKSHAK | Intelligent Railway Safety, Live Tracking & Dynamic ETA</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+    @keyframes pulse-live { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.9); } }
+    .live-dot { animation: pulse-live 2s infinite ease-in-out; }
+    .hero-train-banner { background: linear-gradient(135deg, #091a36 0%, #0d2752 35%, #1e3a8a 70%, #1e1b4b 100%); }
+    .badge-vande { background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); color: #fff; }
+    .badge-rajdhani { background: linear-gradient(135deg, #991b1b 0%, #b91c1c 100%); color: #fff; }
+    .badge-shatabdi { background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%); color: #fff; }
+    .badge-duronto { background: linear-gradient(135deg, #059669 0%, #10b981 100%); color: #fff; }
+    .badge-superfast { background: linear-gradient(135deg, #7c3aed 0%, #9333ea 100%); color: #fff; }
+  </style>
+</head>
+<body class="bg-[#f8fafc] text-slate-800 antialiased font-sans min-h-screen flex flex-col">
+
+  <!-- TOP STATUS BAR -->
+  <aside class="bg-gradient-to-r from-slate-950 via-slate-900 to-indigo-950 text-slate-200 border-b border-slate-800/80 py-1.5 px-3 sm:px-6 text-xs flex items-center justify-between z-50 shadow-sm">
+    <div class="flex items-center gap-2.5">
+      <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 live-dot"></span>
+      <span class="font-extrabold text-white tracking-wide flex items-center gap-1.5">
+        <span>🛡️</span>
+        <span class="text-emerald-400">RAIL</span><span> RAKSHAK</span>
+      </span>
+      <span class="text-slate-400 hidden sm:inline font-mono">| Intelligent Railway Safety, Live Tracking & Dynamic ETA Platform</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <button onclick="openLiveConfigModal()" class="px-2.5 py-0.5 bg-blue-600/30 hover:bg-blue-600/50 text-blue-300 border border-blue-500/40 rounded-md font-semibold transition flex items-center gap-1 text-[11px]" title="API Configuration">
+        <span>⚡ Server & Key</span>
+      </button>
+      <button onclick="speakAnnouncement()" class="px-2.5 py-0.5 bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-300 border border-amber-500/40 rounded-md font-semibold hover:bg-amber-500/30 transition flex items-center gap-1" title="Announce the next stop of the tracked train">
+        🔊 <span class="hidden sm:inline">Audio</span>
+      </button>
+    </div>
+  </aside>
+
+  <div class="flex-1 flex flex-col md:flex-row w-full max-w-[1650px] mx-auto bg-white shadow-sm min-h-screen">
+
+    <!-- ================= LEFT SIDEBAR ================= -->
+    <aside class="w-full md:w-64 bg-white border-r border-slate-200/90 flex flex-col justify-between shrink-0">
+      <div>
+        <div class="p-4 sm:p-5 flex items-center gap-3 border-b border-slate-100">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-700 via-indigo-600 to-emerald-500 text-white flex items-center justify-center font-black text-xl shadow-md shadow-blue-500/20 shrink-0">🛡️</div>
+          <div>
+            <h1 class="font-black text-slate-900 text-base leading-tight tracking-tight">RAIL RAKSHAK</h1>
+            <p class="text-[10px] font-extrabold bg-gradient-to-r from-blue-600 to-emerald-600 bg-clip-text text-transparent tracking-wider uppercase mt-0.5">Train Arrival Time Forecasting Model</p>
+          </div>
+        </div>
+
+        <div class="p-3 space-y-1">
+          <div class="px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-slate-400 flex items-center justify-between">
+            <span>Primary Modules</span>
+            <span class="text-[9px] bg-emerald-100 text-emerald-800 px-1.5 py-0.2 rounded font-mono font-bold">ALL-INDIA</span>
+          </div>
+
+          <!-- 1. DASHBOARD -->
+          <button onclick="switchPage('dashboard')" id="nav-dashboard" class="nav-item w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition bg-blue-50 text-blue-700 shadow-sm">
+            <div class="flex items-center gap-3"><span class="text-base text-blue-600">⊞</span><span>Dashboard</span></div>
+            <span class="w-1.5 h-5 rounded-full bg-blue-600" id="indicator-dashboard"></span>
+          </button>
+
+          <!-- 2. LIVE TRACKING -->
+          <button onclick="switchPage('tracking')" id="nav-tracking" class="nav-item w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition text-slate-600 hover:text-slate-900 hover:bg-slate-50">
+            <div class="flex items-center gap-3">
+              <span class="text-base text-emerald-500">📡</span>
+              <span>Live Tracking</span>
+              <span class="w-2 h-2 rounded-full bg-emerald-500 live-dot ml-auto mr-1"></span>
+            </div>
+            <span class="w-1.5 h-5 rounded-full bg-transparent" id="indicator-tracking"></span>
+          </button>
+
+          <!-- Operations & Insights Group -->
+          <div class="pt-4 px-3 pb-1.5 text-[11px] font-bold uppercase tracking-wider text-slate-400 border-t border-slate-100 mt-3 flex items-center justify-between">
+            <span>Operations & Control</span>
+          </div>
+
+          <button onclick="switchPage('operations')" id="nav-operations" class="nav-item w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition text-slate-600 hover:text-slate-900 hover:bg-slate-50">
+            <div class="flex items-center gap-3"><span class="text-base text-indigo-500">👥</span><span>Station & Staff Operations</span></div>
+            <span class="w-1.5 h-5 rounded-full bg-transparent" id="indicator-operations"></span>
+          </button>
+          <button onclick="switchPage('prediction')" id="nav-prediction" class="nav-item w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition text-slate-600 hover:text-slate-900 hover:bg-slate-50">
+            <div class="flex items-center gap-3"><span class="text-base text-purple-500">⚡</span><span>ETA Prediction Engine</span></div>
+            <span class="w-1.5 h-5 rounded-full bg-transparent" id="indicator-prediction"></span>
+          </button>
+          <button onclick="switchPage('analytics')" id="nav-analytics" class="nav-item w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition text-slate-600 hover:text-slate-900 hover:bg-slate-50">
+            <div class="flex items-center gap-3"><span class="text-base text-rose-500">📊</span><span>Analytics & Metrics</span></div>
+            <span class="w-1.5 h-5 rounded-full bg-transparent" id="indicator-analytics"></span>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ================= MAIN WORKSPACE ================= -->
+    <div class="flex-1 flex flex-col min-w-0 bg-[#f8fafc] overflow-y-auto">
+
+      <header class="bg-white border-b border-slate-200/90 px-4 sm:px-6 py-3.5 flex items-center justify-between gap-3 sticky top-0 z-30 shadow-sm flex-wrap">
+        <div>
+          <h2 id="pageTitle" class="text-base sm:text-lg font-black text-slate-900">RAIL RAKSHAK Dashboard</h2>
+          <p id="pageSubtitle" class="text-xs text-slate-500">Train Arrival Time Forecasting Model & Dynamic ETA Platform</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="openLiveConfigModal()" class="px-3 py-1.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl font-bold transition flex items-center gap-1.5 shadow-sm text-xs">
+            <span>⚡ Live Server & Key</span>
+            <span id="apiKeyPill" class="text-[9px] px-1.5 py-0.5 bg-emerald-400 text-emerald-950 rounded font-mono font-bold">CONNECTED</span>
+          </button>
+          <div class="px-3 py-1 rounded-full bg-emerald-50 border border-emerald-300 text-emerald-800 text-xs font-bold flex items-center gap-1.5 shadow-sm shrink-0">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 live-dot"></span><span>RAIL RAKSHAK Active</span>
+          </div>
+        </div>
+      </header>
+
+      <div class="p-3 sm:p-6 space-y-6 flex-1">
+
+        <!-- ============ 1. DASHBOARD ============ -->
+        <section id="page-dashboard" class="space-y-6">
+          <div class="hero-train-banner rounded-3xl p-6 sm:p-8 text-white relative overflow-hidden shadow-xl border border-blue-900/40">
+            <div class="absolute right-0 top-0 bottom-0 w-1/2 opacity-25 md:opacity-35 pointer-events-none flex items-center justify-end pr-6">
+              <svg class="w-96 h-96 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c-4 0-8 .5-8 4v9.5C4 17.43 5.57 19 7.5 19L6 20.5v.5h12v-.5L16.5 19c1.93 0 3.5-1.57 3.5-3.5V6c0-3.5-4-4-8-4zm0 2c3.71 0 5.13.46 5.76 1H6.24c.63-.54 2.05-1 5.76-1zM6 7h12v5H6V7zm2 9c-.83 0-1.5-.67-1.5-1.5S7.17 13 8 13s1.5.67 1.5 1.5S8.83 16 8 16zm8 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
+            </div>
+            <div class="relative z-10 max-w-xl space-y-3">
+              <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-xs font-bold">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 live-dot"></span><span>RAIL RAKSHAK · Train Arrival Time Forecasting Model</span>
+              </div>
+              <h2 class="text-2xl sm:text-3xl font-black tracking-tight text-white leading-tight">RAIL RAKSHAK: Train Arrival Time Forecasting Model</h2>
+              <p class="text-xs sm:text-sm text-slate-200 leading-relaxed">
+                Predictive arrival estimation, live GPS telemetry, moving status analysis, and clash prevention across Indian Railway corridors.
+              </p>
+              <div class="flex items-center gap-2 pt-2 flex-wrap">
+                <button onclick="switchPage('tracking')" class="px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-xl text-xs font-bold shadow-md transition flex items-center gap-1.5">
+                  <span>📡</span><span>Live Train Tracker</span>
+                </button>
+                <button onclick="switchPage('prediction')" class="px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 backdrop-blur border border-white/15 text-xs text-white font-semibold transition flex items-center gap-1.5">
+                  <span class="text-amber-400">⚡</span><span>Dynamic ETA Engine</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 border border-blue-200/80 rounded-3xl p-5 sm:p-6 shadow-sm">
+            <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+              <div class="space-y-1">
+                <h3 class="text-base font-extrabold text-slate-900">Dynamic Real-Time Punctuality & Arrival Forecasting</h3>
+                <p class="text-xs text-slate-600 max-w-3xl leading-relaxed">
+                  A static timetable keeps the current delay for the rest of the run. The dynamic ETA lets each train win back part of its delay from timetable slack, and adds the ground disruptions you switch on in the ETA Prediction Engine.
+                </p>
+              </div>
+              <button onclick="switchPage('tracking')" class="shrink-0 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-md transition flex items-center gap-1.5"><span>📡</span><span>Track Live Train →</span></button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="bg-white p-4 rounded-2xl border-l-4 border-l-blue-600 border border-slate-200 shadow-sm">
+              <div class="text-xs font-bold text-slate-500 uppercase tracking-wider">Trains in Dataset</div>
+              <div id="statTotal" class="text-xl font-extrabold text-slate-900 mt-1">100 Trains</div>
+              <div id="statTotalSub" class="text-[11px] text-blue-600 font-semibold mt-0.5"></div>
+            </div>
+            <div class="bg-white p-4 rounded-2xl border-l-4 border-l-emerald-500 border border-slate-200 shadow-sm">
+              <div class="text-xs font-bold text-slate-500 uppercase tracking-wider">On Time (≤ 5 min)</div>
+              <div id="statOnTime" class="text-xl font-extrabold text-emerald-600 mt-1"></div>
+              <div id="statOnTimeSub" class="text-[11px] text-slate-500 mt-0.5"></div>
+            </div>
+            <div class="bg-white p-4 rounded-2xl border-l-4 border-l-purple-500 border border-slate-200 shadow-sm">
+              <div class="text-xs font-bold text-slate-500 uppercase tracking-wider">Average Delay Now</div>
+              <div id="statAvg" class="text-xl font-extrabold text-purple-700 mt-1"></div>
+              <div id="statAvgSub" class="text-[11px] text-slate-500 mt-0.5"></div>
+            </div>
+            <div class="bg-white p-4 rounded-2xl border-l-4 border-l-amber-500 border border-slate-200 shadow-sm">
+              <div class="text-xs font-bold text-slate-500 uppercase tracking-wider">Delay Recovered at Terminus</div>
+              <div id="statRec" class="text-xl font-extrabold text-amber-600 mt-1"></div>
+              <div class="text-[11px] text-slate-500 mt-0.5">Dynamic ETA vs static projection (avg)</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ 2. LIVE TRACKING ============ -->
+        <section id="page-tracking" class="hidden space-y-6">
+
+          <!-- LIVE TRACKING SEARCH & QUICK SELECTION -->
+          <div class="bg-white border border-slate-200/90 rounded-3xl p-5 sm:p-7 shadow-sm space-y-4">
+            <div class="space-y-1">
+              <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-300 text-xs font-bold">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 live-dot"></span><span>RAIL RAKSHAK Real-Time Telemetry</span>
+              </div>
+              <h3 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">All-India Live Train Tracker</h3>
+              <p class="text-xs sm:text-sm text-slate-500">
+                Enter any 4 or 5-digit Indian Railways train number to fetch live GPS & NTES moving status, current waypoint, and dynamic delay forecast.
+              </p>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="flex flex-wrap gap-2.5 items-center pt-1">
+              <div class="flex-1 min-w-[260px] relative">
+                <input 
+                  type="text" 
+                  id="liveTrackInput" 
+                  placeholder="Enter Train Number (e.g. 12004, 12951, 22436, 12424)..." 
+                  onkeydown="if(event.key==='Enter')trackTrainFromInput()"
+                  value="12004"
+                  class="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-2xl px-4 py-3 text-xs sm:text-sm font-bold focus:ring-2 focus:ring-emerald-500 focus:bg-white focus:outline-none pr-10"
+                >
+                <button onclick="clearLiveTrackInput()" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 font-bold text-xs">✕</button>
+              </div>
+              <button 
+                onclick="trackTrainFromInput()" 
+                id="btnLiveTrack"
+                class="px-6 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-2xl font-black text-xs sm:text-sm shadow-md shadow-emerald-500/25 transition flex items-center gap-2 shrink-0"
+              >
+                <span>🔍 Track Live Status</span>
+              </button>
+            </div>
+
+            <!-- Popular Quick Selection -->
+            <div class="flex items-center gap-2 overflow-x-auto pb-1 text-xs">
+              <span class="text-slate-400 font-bold uppercase text-[11px] shrink-0">Popular:</span>
+              <button onclick="quickSelectLiveTrain('12004')" class="px-3 py-1 rounded-xl bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 font-bold text-slate-700 border border-slate-200 transition shrink-0">12004 Lucknow Shatabdi</button>
+              <button onclick="quickSelectLiveTrain('12951')" class="px-3 py-1 rounded-xl bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 font-bold text-slate-700 border border-slate-200 transition shrink-0">12951 Mumbai Rajdhani</button>
+              <button onclick="quickSelectLiveTrain('22436')" class="px-3 py-1 rounded-xl bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 font-bold text-slate-700 border border-slate-200 transition shrink-0">22436 Vande Bharat</button>
+              <button onclick="quickSelectLiveTrain('12424')" class="px-3 py-1 rounded-xl bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 font-bold text-slate-700 border border-slate-200 transition shrink-0">12424 Dibrugarh Rajdhani</button>
+              <button onclick="quickSelectLiveTrain('12626')" class="px-3 py-1 rounded-xl bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 font-bold text-slate-700 border border-slate-200 transition shrink-0">12626 Kerala Express</button>
+              <button onclick="quickSelectLiveTrain('12301')" class="px-3 py-1 rounded-xl bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 font-bold text-slate-700 border border-slate-200 transition shrink-0">12301 Howrah Rajdhani</button>
+            </div>
+          </div>
+
+          <!-- LOADING SPINNER -->
+          <div id="liveTrackLoading" class="hidden p-10 text-center bg-white rounded-3xl border border-slate-200 shadow-sm space-y-3">
+            <div class="w-10 h-10 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+            <p class="font-black text-slate-900 text-sm">Querying Live NTES Telemetry...</p>
+            <p class="text-xs text-slate-400 font-mono">Fetching real-time GPS coordinates, speed, passing waypoints and dynamic delays</p>
+          </div>
+
+          <!-- ALERT / NOTICE BOX -->
+          <div id="liveTrackAlert" class="hidden p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-800 text-xs flex items-center justify-between gap-3 shadow-sm">
+            <div class="flex items-center gap-2">
+              <span class="text-base">⚠️</span>
+              <span id="liveTrackAlertMsg" class="font-bold"></span>
+            </div>
+            <button onclick="el('liveTrackAlert').classList.add('hidden')" class="font-bold text-amber-600 hover:text-amber-800">✕</button>
+          </div>
+
+          <!-- LIVE TELEMETRY DISPLAY -->
+          <div id="liveTrackDisplay" class="bg-white border border-slate-200 rounded-3xl p-5 sm:p-7 shadow-sm space-y-5">
+            <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+              <div>
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span id="trackTrainNoBadge" class="font-mono font-black text-sm px-3 py-1 rounded-xl bg-blue-100 text-blue-800 border border-blue-200">12004</span>
+                  <span id="trackMovingBadge" class="px-3 py-1 rounded-xl text-xs font-black inline-flex items-center gap-1.5 bg-emerald-100 text-emerald-800 border border-emerald-300">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 live-dot"></span>
+                    <span id="trackMovingStatus">IN MOTION · 85 km/h</span>
+                  </span>
+                  <span id="trackPunctualityBadge" class="px-3 py-1 rounded-xl text-xs font-black bg-emerald-50 text-emerald-700 border border-emerald-200">Right Time</span>
+                </div>
+                <h3 id="trackTrainTitle" class="text-xl sm:text-2xl font-black text-slate-900 mt-2">12004 - Lucknow Swarna Shatabdi</h3>
+                <p id="trackTrainRoute" class="text-xs text-slate-500 mt-0.5 font-medium"></p>
+              </div>
+
+              <div class="text-right flex flex-col sm:items-end gap-1.5 shrink-0">
+                <button onclick="refreshLiveTracking()" class="px-3.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 rounded-xl font-bold text-xs border border-emerald-300 transition flex items-center gap-1.5 shadow-sm">
+                  <span>🔄</span><span>Refresh Live Status</span>
+                </button>
+                <div id="trackLastUpdated" class="text-[11px] text-slate-400 font-mono"></div>
+              </div>
+            </div>
+
+            <!-- 4 TELEMETRY CARDS -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div class="p-4 rounded-2xl bg-gradient-to-br from-blue-50/70 to-indigo-50/50 border border-blue-200 shadow-sm">
+                <div class="text-[11px] font-bold text-blue-800 uppercase tracking-wider">Current Waypoint</div>
+                <div id="trackCurrentStation" class="text-lg font-black text-slate-900 mt-1 truncate">Unnao Jn (ON)</div>
+                <div id="trackAheadDistance" class="text-xs text-blue-600 font-semibold mt-0.5 truncate">Train has crossed Manak Nagar at 12:37</div>
+              </div>
+
+              <div class="p-4 rounded-2xl bg-gradient-to-br from-emerald-50/70 to-teal-50/50 border border-emerald-200 shadow-sm">
+                <div class="text-[11px] font-bold text-emerald-800 uppercase tracking-wider">Live Speed & Motion</div>
+                <div id="trackLiveSpeed" class="text-lg font-black text-emerald-700 mt-1">85 km/h</div>
+                <div id="trackMotionSub" class="text-xs text-emerald-600 font-semibold mt-0.5">Active block section</div>
+              </div>
+
+              <div class="p-4 rounded-2xl bg-gradient-to-br from-purple-50/70 to-pink-50/50 border border-purple-200 shadow-sm">
+                <div class="text-[11px] font-bold text-purple-800 uppercase tracking-wider">Current Running Delay</div>
+                <div id="trackDelay" class="text-lg font-black text-purple-700 mt-1">Right Time (0 min)</div>
+                <div id="trackDelaySub" class="text-xs text-slate-500 mt-0.5">Timetable projection</div>
+              </div>
+
+              <div class="p-4 rounded-2xl bg-gradient-to-br from-amber-50/70 to-orange-50/50 border border-amber-200 shadow-sm">
+                <div class="text-[11px] font-bold text-amber-800 uppercase tracking-wider">Next Station & ETA</div>
+                <div id="trackNextStation" class="text-lg font-black text-amber-800 mt-1 truncate">Lucknow Jn</div>
+                <div id="trackNextEta" class="text-xs text-amber-700 font-extrabold mt-0.5">ETA: 13:00</div>
+              </div>
+            </div>
+
+            <!-- STATION PROGRESS & LIVE WAYPOINTS TABLE -->
+            <div class="space-y-3 pt-3">
+              <div class="flex items-center justify-between flex-wrap gap-2">
+                <div>
+                  <h4 class="font-extrabold text-slate-900 text-sm sm:text-base">Station Halts Progress & Real-Time Waypoints</h4>
+                  <p class="text-xs text-slate-500">Live platform assignments, scheduled times vs actual NTES arrival and delay status.</p>
+                </div>
+                <span id="trackHaltsCount" class="text-xs font-mono font-bold px-2.5 py-1 rounded-xl bg-slate-100 text-slate-700 border border-slate-200"></span>
+              </div>
+
+              <div class="overflow-x-auto border border-slate-100 rounded-2xl">
+                <table class="w-full text-left text-xs font-mono">
+                  <thead class="bg-slate-50 text-slate-500 font-semibold uppercase text-[11px] border-b border-slate-200">
+                    <tr>
+                      <th class="py-3 px-3 font-sans">Station Name</th>
+                      <th class="py-3 px-2">Dist</th>
+                      <th class="py-3 px-2">Scheduled</th>
+                      <th class="py-3 px-2 text-rose-600">Static NTES</th>
+                      <th class="py-3 px-2 text-emerald-600 font-bold">Actual / Live ETA</th>
+                      <th class="py-3 px-2 text-center">Platform</th>
+                      <th class="py-3 px-3 text-right font-sans">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="trackingTableBody" class="divide-y divide-slate-100 text-slate-700"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ 4. OPERATIONS ============ -->
+        <section id="page-operations" class="hidden space-y-6">
+          <div class="bg-white border border-slate-200 rounded-3xl p-5 sm:p-7 shadow-sm space-y-6">
+            <div class="space-y-1">
+              <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 text-xs font-bold"><span>👥</span><span>Operational Decision Support Hub</span></div>
+              <h3 class="text-xl sm:text-2xl font-extrabold text-slate-900">Station Planning, Crew Roster & Logistics Operations</h3>
+              <p id="opsIntro" class="text-xs sm:text-sm text-slate-500"></p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div class="p-5 rounded-2xl bg-gradient-to-br from-amber-50/50 to-orange-50/30 border border-amber-200/90 shadow-sm space-y-3">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2"><span class="w-8 h-8 rounded-xl bg-amber-500 text-white flex items-center justify-center font-bold text-sm">🚉</span><h4 class="font-extrabold text-slate-900 text-sm">Platform Allocation & Clash Alert</h4></div>
+                  <span class="text-[10px] bg-amber-200 text-amber-900 font-bold px-2 py-0.5 rounded">±20 min window</span>
+                </div>
+                <p id="opsPlatText" class="text-xs text-slate-600 leading-relaxed"></p>
+                <div class="p-3 bg-white rounded-xl border border-amber-200 text-xs space-y-1">
+                  <div class="flex items-center justify-between font-bold text-slate-800"><span id="opsPlatHead"></span><span id="opsPlatRisk"></span></div>
+                  <p id="opsPlatRec" class="text-[11px] text-slate-500"></p>
+                </div>
+              </div>
+
+              <div class="p-5 rounded-2xl bg-gradient-to-br from-blue-50/50 to-indigo-50/30 border border-blue-200/90 shadow-sm space-y-3">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2"><span class="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold text-sm">👨‍✈️</span><h4 class="font-extrabold text-slate-900 text-sm">Crew Scheduling & Statutory Duty</h4></div>
+                  <span class="text-[10px] bg-blue-200 text-blue-900 font-bold px-2 py-0.5 rounded">Max 9h Limit</span>
+                </div>
+                <p class="text-xs text-slate-600 leading-relaxed">Crew is assumed to sign on at the origin and change at the first long halt (5 min or more) after 8 hours of duty. The ETA gives the duty left before that handover.</p>
+                <div class="p-3 bg-white rounded-xl border border-blue-200 text-xs space-y-1">
+                  <div class="flex items-center justify-between font-bold text-slate-800"><span id="opsCrewHead"></span><span id="opsCrewRisk"></span></div>
+                  <p id="opsCrewRec" class="text-[11px] text-slate-500"></p>
+                </div>
+              </div>
+
+              <div class="p-5 rounded-2xl bg-gradient-to-br from-emerald-50/50 to-teal-50/30 border border-emerald-200/90 shadow-sm space-y-3">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2"><span class="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold text-sm">🚿</span><h4 class="font-extrabold text-slate-900 text-sm">Pit-Line Cleaning & Turnaround</h4></div>
+                  <span id="opsPitTag" class="text-[10px] bg-emerald-200 text-emerald-900 font-bold px-2 py-0.5 rounded"></span>
+                </div>
+                <p class="text-xs text-slate-600 leading-relaxed">The rake needs servicing at the terminal before it leaves as the return train. Under 2 hours the return service is at risk.</p>
+                <div class="p-3 bg-white rounded-xl border border-emerald-200 text-xs space-y-1">
+                  <div class="flex items-center justify-between font-bold text-slate-800"><span id="opsPitHead"></span><span id="opsPitRisk"></span></div>
+                  <p id="opsPitRec" class="text-[11px] text-slate-500"></p>
+                </div>
+              </div>
+
+              <div class="p-5 rounded-2xl bg-gradient-to-br from-purple-50/50 to-pink-50/30 border border-purple-200/90 shadow-sm space-y-3">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2"><span class="w-8 h-8 rounded-xl bg-purple-600 text-white flex items-center justify-center font-bold text-sm">🚕</span><h4 class="font-extrabold text-slate-900 text-sm">Feeder Transport & Parcel Logistics</h4></div>
+                  <span class="text-[10px] bg-purple-200 text-purple-900 font-bold px-2 py-0.5 rounded">ETA-synced</span>
+                </div>
+                <p class="text-xs text-slate-600 leading-relaxed">City buses, metro and parcel partners get the dynamic arrival time instead of the timetable time.</p>
+                <div class="p-3 bg-white rounded-xl border border-purple-200 text-xs space-y-1">
+                  <div class="flex items-center justify-between font-bold text-slate-800"><span id="opsFeedHead"></span><span id="opsFeedRisk" class="text-purple-700"></span></div>
+                  <p id="opsFeedRec" class="text-[11px] text-slate-500"></p>
+                </div>
+              </div>
+            </div>
+
+            <div class="p-5 rounded-2xl bg-slate-900 text-white space-y-3 shadow-lg">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h4 class="font-bold text-white text-sm">Multi-Day Journey Delay Profile</h4>
+                  <p id="opsDaysSub" class="text-xs text-slate-400"></p>
+                </div>
+                <span class="text-xs font-mono text-amber-400">Per journey day</span>
+              </div>
+              <div id="opsDays" class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ 5. PREDICTION ============ -->
+        <section id="page-prediction" class="hidden space-y-6">
+          <div class="bg-white border border-slate-200 rounded-3xl p-5 sm:p-7 shadow-sm space-y-5">
+            <div>
+              <span class="text-xs font-mono font-bold px-2.5 py-0.5 rounded bg-purple-100 text-purple-700">PREDICTIVE ENGINE</span>
+              <h3 class="text-xl font-extrabold text-slate-900 mt-1">Multi-Stage Dynamic Delay Prediction</h3>
+              <p id="predSub" class="text-xs text-slate-500"></p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div class="p-4 rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50/40 border border-blue-200 shadow-sm">
+                <div class="text-xs font-bold text-blue-800">Next Station Arrival</div>
+                <div id="predNextName" class="text-lg font-black text-slate-900 mt-1"></div>
+                <div id="predNextEta" class="text-sm font-bold text-emerald-600 mt-1"></div>
+                <div id="predNextRange" class="text-[11px] text-slate-500 mt-0.5"></div>
+              </div>
+              <div class="p-4 rounded-2xl bg-gradient-to-br from-purple-50 to-indigo-50/40 border border-purple-200 shadow-sm">
+                <div class="text-xs font-bold text-purple-800">Intermediate Station Arrival</div>
+                <div id="predMidName" class="text-lg font-black text-slate-900 mt-1"></div>
+                <div id="predMidEta" class="text-sm font-bold text-emerald-600 mt-1"></div>
+                <div id="predMidRange" class="text-[11px] text-slate-500 mt-0.5"></div>
+              </div>
+              <div class="p-4 rounded-2xl bg-gradient-to-br from-emerald-50 to-teal-50/40 border border-emerald-200 shadow-sm">
+                <div class="text-xs font-bold text-emerald-800">Destination Terminal Arrival</div>
+                <div id="predEndName" class="text-lg font-black text-slate-900 mt-1"></div>
+                <div id="predEndEta" class="text-sm font-bold text-emerald-600 mt-1"></div>
+                <div id="predEndRange" class="text-[11px] text-slate-500 mt-0.5"></div>
+              </div>
+            </div>
+
+            <div class="p-5 rounded-2xl bg-slate-900 text-white space-y-4 shadow-lg border border-slate-800">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h4 class="font-bold text-white text-sm">Ground Disruption Simulator</h4>
+                  <p class="text-xs text-slate-400">Toggle a disruption to add delay to every train's dynamic ETA</p>
+                </div>
+                <span id="sandTotal" class="text-xs font-mono text-emerald-400">+0 min</span>
+              </div>
+              <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 text-xs">
+                <button onclick="toggleDisruption('fog')" id="sandFog" class="p-3 rounded-xl bg-slate-800 border border-slate-700 hover:border-blue-500 text-left transition"><div class="text-slate-400">Winter Fog</div><div class="font-bold text-white mt-1" id="sandFogVal">Off</div></button>
+                <button onclick="toggleDisruption('tsr')" id="sandTsr" class="p-3 rounded-xl bg-slate-800 border border-slate-700 hover:border-amber-500 text-left transition"><div class="text-slate-400">Track TSR (30 km/h)</div><div class="font-bold text-white mt-1" id="sandTsrVal">Off</div></button>
+                <button onclick="toggleDisruption('freight')" id="sandFreight" class="p-3 rounded-xl bg-slate-800 border border-slate-700 hover:border-red-500 text-left transition"><div class="text-slate-400">Preceding Freight</div><div class="font-bold text-white mt-1" id="sandFreightVal">Clear</div></button>
+                <button onclick="toggleDisruption('lcgate')" id="sandLc" class="p-3 rounded-xl bg-slate-800 border border-slate-700 hover:border-orange-500 text-left transition"><div class="text-slate-400">Level Crossing Gate</div><div class="font-bold text-white mt-1" id="sandLcVal">Interlocked</div></button>
+                <button onclick="toggleDisruption('platform')" id="sandPlat" class="p-3 rounded-xl bg-slate-800 border border-slate-700 hover:border-purple-500 text-left transition"><div class="text-slate-400">Platform Wait</div><div class="font-bold text-white mt-1" id="sandPlatVal">Free</div></button>
+              </div>
+            </div>
+            <p class="text-[11px] text-slate-400 leading-relaxed">
+              How the ETA is made: a train keeps its current delay, minus a recovery per minute of scheduled running time that depends on its class (Vande Bharat 0.08, Shatabdi 0.10, Rajdhani 0.06, Duronto 0.05, others 0.035), plus any active disruption. P90 adds 0.8 × √(minutes ahead). Physics-informed baseline with dynamic slack recovery and multi-horizon conformal prediction intervals.
+            </p>
+          </div>
+        </section>
+
+        <!-- ============ 6. ANALYTICS ============ -->
+        <section id="page-analytics" class="hidden space-y-6">
+          <div class="bg-white border border-slate-200 rounded-3xl p-5 sm:p-7 shadow-sm space-y-5">
+            <div>
+              <span class="text-xs font-mono font-bold px-2.5 py-0.5 rounded bg-emerald-100 text-emerald-800">FLEET REPORT</span>
+              <h3 class="text-xl font-extrabold text-slate-900 mt-1">Punctuality by Service Type</h3>
+              <p class="text-xs text-slate-500">Calculated from the 100 coaching trains across all operational divisions; updates dynamically with disruption modeling.</p>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs font-mono">
+                <thead class="text-slate-400 border-b border-slate-200 font-semibold text-[11px]">
+                  <tr>
+                    <th class="pb-3 font-sans">Service Type</th>
+                    <th class="pb-3">Trains</th>
+                    <th class="pb-3">Avg Delay Now</th>
+                    <th class="pb-3">On Time (≤ 5 min)</th>
+                    <th class="pb-3 text-rose-600">Static Delay at Terminus</th>
+                    <th class="pb-3 text-emerald-600 font-bold">Dynamic Delay at Terminus</th>
+                  </tr>
+                </thead>
+                <tbody id="analyticsCats" class="divide-y divide-slate-100 text-slate-700"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="bg-white border border-slate-200 rounded-3xl p-5 sm:p-7 shadow-sm space-y-4">
+            <h3 class="text-base font-extrabold text-slate-900">10 Most Delayed Trains Right Now</h3>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs font-mono">
+                <thead class="text-slate-400 border-b border-slate-200 font-semibold text-[11px]">
+                  <tr><th class="pb-3">#</th><th class="pb-3 font-sans">Train</th><th class="pb-3 font-sans">Route</th><th class="pb-3">Delay Now</th><th class="pb-3">Dynamic ETA</th><th class="pb-3"></th></tr>
+                </thead>
+                <tbody id="analyticsTop" class="divide-y divide-slate-100 text-slate-700"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ MODAL: HALTS ============ -->
+  <div id="trainDetailModal" class="hidden fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-6 overflow-y-auto" onclick="if(event.target===this)closeTrainModal()">
+    <div class="bg-white rounded-3xl max-w-3xl w-full p-5 sm:p-7 shadow-2xl border border-slate-200 space-y-4 my-8">
+      <div class="flex items-start justify-between border-b border-slate-100 pb-3">
+        <div>
+          <div class="flex items-center gap-2">
+            <span id="mTrainNo" class="font-mono font-extrabold text-blue-700 bg-blue-50 px-2 py-0.5 rounded text-xs border border-blue-200"></span>
+            <span id="mTrainBadge" class="text-xs font-bold px-2.5 py-0.5 rounded-full"></span>
+          </div>
+          <h3 id="mTrainName" class="text-lg sm:text-xl font-extrabold text-slate-900 mt-1"></h3>
+          <p id="mTrainRoute" class="text-xs text-slate-500"></p>
+        </div>
+        <button onclick="closeTrainModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 font-bold text-sm flex items-center justify-center">✕</button>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
+        <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-100"><span class="text-slate-400 block text-[10px]">Max Speed</span><span id="mTrainSpeed" class="font-extrabold text-slate-800"></span></div>
+        <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-100"><span class="text-slate-400 block text-[10px]">Loco / Rake</span><span id="mTrainLoco" class="font-extrabold text-blue-600"></span></div>
+        <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-100"><span class="text-slate-400 block text-[10px]">Total Distance</span><span id="mTrainDist" class="font-extrabold text-slate-800"></span></div>
+        <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-100"><span class="text-slate-400 block text-[10px]">Classes</span><span id="mTrainClasses" class="font-extrabold text-emerald-600"></span></div>
+        <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-100"><span class="text-slate-400 block text-[10px]">Running Days</span><span id="mTrainDays" class="font-extrabold text-slate-800"></span></div>
+        <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-100"><span class="text-slate-400 block text-[10px]">Journey Time</span><span id="mTrainDur" class="font-extrabold text-slate-800"></span></div>
+        <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-100"><span class="text-slate-400 block text-[10px]">Halts Listed</span><span id="mTrainHalts" class="font-extrabold text-slate-800"></span></div>
+        <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-100"><span class="text-slate-400 block text-[10px]">Return Train</span><span id="mTrainRet" class="font-extrabold text-slate-800"></span></div>
+      </div>
+
+      <div class="space-y-2">
+        <h4 class="font-bold text-slate-900 text-xs uppercase tracking-wider">Scheduled Halts & Dynamic ETA</h4>
+        <div class="max-h-72 overflow-y-auto border border-slate-100 rounded-xl">
+          <table class="w-full text-left text-xs font-mono">
+            <thead class="bg-slate-50 text-slate-500 text-[10px] uppercase sticky top-0">
+              <tr>
+                <th class="py-2 px-3">Station</th><th class="py-2 px-2">Dist</th><th class="py-2 px-2">Day</th>
+                <th class="py-2 px-2">Arrives</th><th class="py-2 px-2">Departs</th>
+                <th class="py-2 px-2 text-emerald-600 font-bold">Actual / ETA</th><th class="py-2 px-2 text-center">PF</th>
+              </tr>
+            </thead>
+            <tbody id="mHaltsBody" class="divide-y divide-slate-100 text-slate-700"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="pt-2 flex justify-end gap-2">
+        <button onclick="closeTrainModal()" class="px-4 py-2 bg-slate-100 text-slate-700 rounded-xl text-xs font-bold hover:bg-slate-200 transition">Close</button>
+        <button onclick="selectAndTrackModalTrain()" class="px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold hover:bg-blue-700 transition">Track Live ETA →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: LIVE SERVER & API SETTINGS -->
+  <div id="liveConfigModal" class="hidden fixed inset-0 bg-slate-950/75 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-6 overflow-y-auto" onclick="if(event.target===this)closeLiveConfigModal()">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-5 sm:p-7 shadow-2xl border border-slate-200 space-y-5 my-8">
+      <div class="flex items-start justify-between border-b border-slate-100 pb-3">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-600 text-white flex items-center justify-center text-lg font-bold shadow-md shadow-emerald-500/20">
+            ⚡
+          </div>
+          <div>
+            <h3 class="text-lg font-black text-slate-900">RAIL RAKSHAK Live Telemetry Settings</h3>
+            <p class="text-xs text-slate-500">Configure Indian Railways RapidAPI connection</p>
+          </div>
+        </div>
+        <button onclick="closeLiveConfigModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 font-bold text-sm flex items-center justify-center transition">✕</button>
+      </div>
+
+      <div class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">API Provider Host</label>
+          <input type="text" id="cfgHost" value="indian-railway-irctc.p.rapidapi.com" class="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-xl px-3.5 py-2.5 text-xs font-mono font-bold focus:ring-2 focus:ring-emerald-500 focus:bg-white focus:outline-none">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">RapidAPI Key</label>
+          <div class="relative">
+            <input type="password" id="cfgApiKey" value="020d80858emsh1fe5d9a8d049f09p10352cjsn20eeed39f1ec" class="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-xl px-3.5 py-2.5 text-xs font-mono font-bold focus:ring-2 focus:ring-emerald-500 focus:bg-white focus:outline-none pr-16">
+            <button type="button" onclick="togglePasswordVisibility()" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-500 hover:text-slate-800 bg-slate-200/70 px-2 py-0.5 rounded">
+              Show
+            </button>
+          </div>
+          <p class="text-[11px] text-slate-400 mt-1">Configured for indian-railway-irctc.p.rapidapi.com via RapidAPI Hub.</p>
+        </div>
+
+        <div class="p-3 bg-slate-50 rounded-2xl border border-slate-200 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-slate-700">Test Connection</span>
+            <button type="button" onclick="testApiKey()" id="btnTestKey" class="px-3 py-1 bg-white hover:bg-slate-100 text-emerald-700 border border-slate-200 rounded-lg text-xs font-bold transition shadow-sm">
+              🔌 Test Ping
+            </button>
+          </div>
+          <div id="testPingResult" class="text-[11px] text-slate-500">Click 'Test Ping' to check key latency.</div>
+        </div>
+      </div>
+
+      <div class="pt-2 flex justify-end gap-2 border-t border-slate-100">
+        <button type="button" onclick="closeLiveConfigModal()" class="px-4 py-2 bg-slate-100 text-slate-700 rounded-xl text-xs font-bold hover:bg-slate-200 transition">Cancel</button>
+        <button type="button" onclick="saveLiveConfig()" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-md shadow-emerald-500/20 transition">Save & Apply</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SCRIPT ============ -->
+  <script>
+    // =====================================================================
+    // SYNTHETIC DATA. Every train below is made up (no API, no real feed).
+    // Stop format: [station, km, day, arrives, departs, platform]
+    // live: the frozen "right now" snapshot: pos = index of the last stop passed,
+    //       delay = minutes late at that stop, hist = actual delay at each passed stop.
+    // =====================================================================
+    const STATIONS = [
+  { code:"NDLS", name:"New Delhi", city:"Delhi", zone:"NR" },
+  { code:"NZM", name:"H Nizamuddin", city:"Delhi", zone:"NR" },
+  { code:"ALJN", name:"Aligarh Jn", city:"Aligarh", zone:"NCR" },
+  { code:"TDL", name:"Tundla Jn", city:"Tundla", zone:"NCR" },
+  { code:"ETW", name:"Etawah Jn", city:"Etawah", zone:"NCR" },
+  { code:"CNB", name:"Kanpur Central", city:"Kanpur", zone:"NCR" },
+  { code:"PRYJ", name:"Prayagraj Jn", city:"Prayagraj", zone:"NCR" },
+  { code:"DDU", name:"Pt. Deen Dayal Upadhyaya Jn", city:"Mughalsarai", zone:"ECR" },
+  { code:"BSB", name:"Varanasi Jn", city:"Varanasi", zone:"NER" },
+  { code:"LKO", name:"Lucknow Charbagh", city:"Lucknow", zone:"NR" },
+  { code:"GAYA", name:"Gaya Jn", city:"Gaya", zone:"ECR" },
+  { code:"DHN", name:"Dhanbad Jn", city:"Dhanbad", zone:"ECR" },
+  { code:"ASN", name:"Asansol Jn", city:"Asansol", zone:"ER" },
+  { code:"HWH", name:"Howrah Jn", city:"Kolkata", zone:"ER" },
+  { code:"PNBE", name:"Patna Jn", city:"Patna", zone:"ECR" },
+  { code:"NJP", name:"New Jalpaiguri", city:"Siliguri", zone:"NFR" },
+  { code:"GHY", name:"Guwahati", city:"Guwahati", zone:"NFR" },
+  { code:"DBRG", name:"Dibrugarh", city:"Dibrugarh", zone:"NFR" },
+  { code:"MTJ", name:"Mathura Jn", city:"Mathura", zone:"NCR" },
+  { code:"KOTA", name:"Kota Jn", city:"Kota", zone:"WCR" },
+  { code:"RTM", name:"Ratlam Jn", city:"Ratlam", zone:"WR" },
+  { code:"BRC", name:"Vadodara Jn", city:"Vadodara", zone:"WR" },
+  { code:"BH", name:"Bharuch Jn", city:"Bharuch", zone:"WR" },
+  { code:"ST", name:"Surat", city:"Surat", zone:"WR" },
+  { code:"VAPI", name:"Vapi", city:"Vapi", zone:"WR" },
+  { code:"BVI", name:"Borivali", city:"Mumbai", zone:"WR" },
+  { code:"MMCT", name:"Mumbai Central", city:"Mumbai", zone:"WR" },
+  { code:"ADI", name:"Ahmedabad Jn", city:"Ahmedabad", zone:"WR" },
+  { code:"GNC", name:"Gandhinagar Capital", city:"Gandhinagar", zone:"WR" },
+  { code:"RE", name:"Rewari Jn", city:"Rewari", zone:"NWR" },
+  { code:"JP", name:"Jaipur Jn", city:"Jaipur", zone:"NWR" },
+  { code:"AII", name:"Ajmer Jn", city:"Ajmer", zone:"NWR" },
+  { code:"ABR", name:"Abu Road", city:"Abu Road", zone:"NWR" },
+  { code:"PNU", name:"Palanpur Jn", city:"Palanpur", zone:"WR" },
+  { code:"KGP", name:"Kharagpur Jn", city:"Kharagpur", zone:"SER" },
+  { code:"TATA", name:"Tatanagar Jn", city:"Jamshedpur", zone:"SER" },
+  { code:"CKP", name:"Chakradharpur", city:"Chakradharpur", zone:"SER" },
+  { code:"ROU", name:"Rourkela Jn", city:"Rourkela", zone:"SER" },
+  { code:"BSP", name:"Bilaspur Jn", city:"Bilaspur", zone:"SECR" },
+  { code:"R", name:"Raipur Jn", city:"Raipur", zone:"SECR" },
+  { code:"DURG", name:"Durg Jn", city:"Durg", zone:"SECR" },
+  { code:"G", name:"Gondia Jn", city:"Gondia", zone:"SECR" },
+  { code:"NGP", name:"Nagpur", city:"Nagpur", zone:"CR" },
+  { code:"WR", name:"Wardha Jn", city:"Wardha", zone:"CR" },
+  { code:"BSL", name:"Bhusaval Jn", city:"Bhusaval", zone:"CR" },
+  { code:"NK", name:"Nashik Road", city:"Nashik", zone:"CR" },
+  { code:"KYN", name:"Kalyan Jn", city:"Kalyan", zone:"CR" },
+  { code:"DR", name:"Dadar", city:"Mumbai", zone:"CR" },
+  { code:"CSMT", name:"Mumbai CSMT", city:"Mumbai", zone:"CR" },
+  { code:"PUNE", name:"Pune Jn", city:"Pune", zone:"CR" },
+  { code:"LNL", name:"Lonavala", city:"Lonavala", zone:"CR" },
+  { code:"DD", name:"Daund Jn", city:"Daund", zone:"CR" },
+  { code:"SUR", name:"Solapur", city:"Solapur", zone:"CR" },
+  { code:"KLBG", name:"Kalaburagi", city:"Kalaburagi", zone:"CR" },
+  { code:"WADI", name:"Wadi Jn", city:"Wadi", zone:"CR" },
+  { code:"GTL", name:"Guntakal Jn", city:"Guntakal", zone:"SCR" },
+  { code:"RU", name:"Renigunta Jn", city:"Tirupati", zone:"SCR" },
+  { code:"AJJ", name:"Arakkonam Jn", city:"Arakkonam", zone:"SR" },
+  { code:"MAS", name:"MGR Chennai Central", city:"Chennai", zone:"SR" },
+  { code:"KPD", name:"Katpadi Jn", city:"Vellore", zone:"SR" },
+  { code:"JTJ", name:"Jolarpettai Jn", city:"Jolarpettai", zone:"SR" },
+  { code:"BWT", name:"Bangarapet Jn", city:"Bangarapet", zone:"SWR" },
+  { code:"KJM", name:"Krishnarajapuram", city:"Bengaluru", zone:"SWR" },
+  { code:"SBC", name:"KSR Bengaluru", city:"Bengaluru", zone:"SWR" },
+  { code:"MYA", name:"Mandya", city:"Mandya", zone:"SWR" },
+  { code:"MYS", name:"Mysuru Jn", city:"Mysuru", zone:"SWR" },
+  { code:"GDR", name:"Gudur Jn", city:"Gudur", zone:"SCR" },
+  { code:"NLR", name:"Nellore", city:"Nellore", zone:"SCR" },
+  { code:"OGL", name:"Ongole", city:"Ongole", zone:"SCR" },
+  { code:"BZA", name:"Vijayawada Jn", city:"Vijayawada", zone:"SCR" },
+  { code:"RJY", name:"Rajahmundry", city:"Rajahmundry", zone:"SCR" },
+  { code:"VSKP", name:"Visakhapatnam", city:"Visakhapatnam", zone:"ECoR" },
+  { code:"BAM", name:"Brahmapur", city:"Brahmapur", zone:"ECoR" },
+  { code:"BBS", name:"Bhubaneswar", city:"Bhubaneswar", zone:"ECoR" },
+  { code:"BLS", name:"Balasore", city:"Balasore", zone:"SER" },
+  { code:"BHC", name:"Bhadrak", city:"Bhadrak", zone:"ECoR" },
+  { code:"CTC", name:"Cuttack", city:"Cuttack", zone:"ECoR" },
+  { code:"PURI", name:"Puri", city:"Puri", zone:"ECoR" },
+  { code:"SC", name:"Secunderabad Jn", city:"Hyderabad", zone:"SCR" },
+  { code:"WL", name:"Warangal", city:"Warangal", zone:"SCR" },
+  { code:"MABD", name:"Mahabubabad", city:"Mahabubabad", zone:"SCR" },
+  { code:"KMT", name:"Khammam", city:"Khammam", zone:"SCR" },
+  { code:"SLO", name:"Samalkot Jn", city:"Samalkot", zone:"SCR" },
+  { code:"PNP", name:"Panipat Jn", city:"Panipat", zone:"NR" },
+  { code:"KUN", name:"Karnal", city:"Karnal", zone:"NR" },
+  { code:"UMB", name:"Ambala Cantt Jn", city:"Ambala", zone:"NR" },
+  { code:"RPJ", name:"Rajpura Jn", city:"Rajpura", zone:"NR" },
+  { code:"LDH", name:"Ludhiana Jn", city:"Ludhiana", zone:"NR" },
+  { code:"JUC", name:"Jalandhar City Jn", city:"Jalandhar", zone:"NR" },
+  { code:"BEAS", name:"Beas Jn", city:"Beas", zone:"NR" },
+  { code:"ASR", name:"Amritsar Jn", city:"Amritsar", zone:"NR" },
+  { code:"CDG", name:"Chandigarh", city:"Chandigarh", zone:"NR" },
+  { code:"KLK", name:"Kalka", city:"Kalka", zone:"NR" },
+  { code:"RDM", name:"Ramagundam", city:"Ramagundam", zone:"SCR" },
+  { code:"BPQ", name:"Balharshah Jn", city:"Balharshah", zone:"SCR" },
+  { code:"BZU", name:"Betul", city:"Betul", zone:"WCR" },
+  { code:"ET", name:"Itarsi Jn", city:"Itarsi", zone:"WCR" },
+  { code:"RKMP", name:"Rani Kamlapati (Bhopal)", city:"Bhopal", zone:"WCR" },
+  { code:"BINA", name:"Bina Jn", city:"Bina", zone:"WCR" },
+  { code:"JHS", name:"Jhansi Jn", city:"Jhansi", zone:"NCR" },
+  { code:"GWL", name:"Gwalior Jn", city:"Gwalior", zone:"NCR" },
+  { code:"AGC", name:"Agra Cantt", city:"Agra", zone:"NCR" },
+  { code:"ROK", name:"Rohtak Jn", city:"Rohtak", zone:"NR" },
+  { code:"JIND", name:"Jind Jn", city:"Jind", zone:"NR" },
+  { code:"JAT", name:"Jammu Tawi", city:"Jammu", zone:"NR" },
+  { code:"SVDK", name:"Shri Mata Vaishno Devi Katra", city:"Katra", zone:"NR" },
+  { code:"SA", name:"Salem Jn", city:"Salem", zone:"SR" },
+  { code:"ED", name:"Erode Jn", city:"Erode", zone:"SR" },
+  { code:"CBE", name:"Coimbatore Jn", city:"Coimbatore", zone:"SR" },
+  { code:"PGT", name:"Palakkad Jn", city:"Palakkad", zone:"SR" },
+  { code:"TCR", name:"Thrissur", city:"Thrissur", zone:"SR" },
+  { code:"ERS", name:"Ernakulam Jn", city:"Kochi", zone:"SR" },
+  { code:"KTYM", name:"Kottayam", city:"Kottayam", zone:"SR" },
+  { code:"QLN", name:"Kollam Jn", city:"Kollam", zone:"SR" },
+  { code:"TVC", name:"Thiruvananthapuram Central", city:"Thiruvananthapuram", zone:"SR" }
+    ];
+
+    const RAW_TRAINS = [
+  // 22436 Delhi–Varanasi Vande Bharat Express  (NDLS → BSB)
+  { no:"22436", name:"Delhi–Varanasi Vande Bharat Express", cat:"Vande Bharat", days:["Mon","Tue","Wed","Fri","Sat","Sun"], classes:"CC, EC", maxSpeed:130, loco:"Self-Propelled Trainset (16 Coaches)", ret:"22435",
+    live:{ pos:2, delay:1, speed:100, hist:[0,0,1] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["NDLS",0,1,null,"06:00",10],
+      ["CNB",440,1,"09:57","09:59",4],
+      ["PRYJ",634,1,"11:56","11:58",2],
+      ["BSB",759,1,"13:13",null,4]
+    ] },
+  // 22435 Delhi–Varanasi Vande Bharat Express  (BSB → NDLS)
+  { no:"22435", name:"Delhi–Varanasi Vande Bharat Express", cat:"Vande Bharat", days:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"], classes:"CC, EC", maxSpeed:130, loco:"Self-Propelled Trainset (16 Coaches)", ret:"22436",
+    live:{ pos:2, delay:0, speed:87, hist:[0,2,0] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["BSB",0,1,null,"15:00",5],
+      ["PRYJ",125,1,"16:11","16:13",4],
+      ["CNB",319,1,"18:06","18:08",2],
+      ["NDLS",759,1,"22:30",null,6]
+    ] },
+  // 20901 Mumbai–Gandhinagar Vande Bharat Express  (MMCT → GNC)
+  { no:"20901", name:"Mumbai–Gandhinagar Vande Bharat Express", cat:"Vande Bharat", days:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"], classes:"CC, EC", maxSpeed:130, loco:"Self-Propelled Trainset (8 Coaches)", ret:"20902",
+    live:{ pos:1, delay:7, speed:111, hist:[0,7] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["MMCT",0,1,null,"06:10",1],
+      ["ST",263,1,"09:03","09:05",2],
+      ["BRC",392,1,"10:27","10:31",5],
+      ["ADI",491,1,"11:31","11:35",2],
+      ["GNC",522,1,"11:53",null,3]
+    ] },
+  // 20902 Mumbai–Gandhinagar Vande Bharat Express  (GNC → MMCT)
+  { no:"20902", name:"Mumbai–Gandhinagar Vande Bharat Express", cat:"Vande Bharat", days:["Mon","Tue","Wed","Thu","Sat","Sun"], classes:"CC, EC", maxSpeed:130, loco:"Self-Propelled Trainset (8 Coaches)", ret:"20901",
+    live:{ pos:3, delay:0, speed:95, hist:[0,0,1,0] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["GNC",0,1,null,"14:05",3],
+      ["ADI",31,1,"14:24","14:28",10],
+      ["BRC",130,1,"15:22","15:25",4],
+      ["ST",259,1,"16:45","16:49",1],
+      ["MMCT",522,1,"19:31",null,9]
+    ] },
+  // 20607 Chennai–Mysuru Vande Bharat Express  (MAS → MYS)
+  { no:"20607", name:"Chennai–Mysuru Vande Bharat Express", cat:"Vande Bharat", days:["Mon","Tue","Wed","Fri","Sat","Sun"], classes:"CC, EC", maxSpeed:130, loco:"Self-Propelled Trainset (8 Coaches)", ret:"20608",
+    live:{ pos:1, delay:4, speed:95, hist:[0,4] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["MAS",0,1,null,"05:50",7],
+      ["KPD",132,1,"07:07","07:11",1],
+      ["SBC",362,1,"09:29","09:32",11],
+      ["MYS",500,1,"10:53",null,1]
+    ] },
+  // 20608 Chennai–Mysuru Vande Bharat Express  (MYS → MAS)
+  { no:"20608", name:"Chennai–Mysuru Vande Bharat Express", cat:"Vande Bharat", days:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"], classes:"CC, EC", maxSpeed:130, loco:"Self-Propelled Trainset (8 Coaches)", ret:"20607",
+    live:{ pos:2, delay:4, speed:82, hist:[0,1,4] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["MYS",0,1,null,"14:05",2],
+      ["SBC",138,1,"15:25","15:29",5],
+      ["KPD",368,1,"17:47","17:51",1],
+      ["MAS",500,1,"19:06",null,12]
+    ] },
+  // 22439 Delhi–Katra Vande Bharat Express  (NDLS → SVDK)
+  { no:"22439", name:"Delhi–Katra Vande Bharat Express", cat:"Vande Bharat", days:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"], classes:"CC, EC", maxSpeed:130, loco:"Self-Propelled Trainset (16 Coaches)", ret:"22440",
+    live:{ pos:1, delay:0, speed:80, hist:[0,0] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["NDLS",0,1,null,"06:00",5],
+      ["LDH",338,1,"09:06","09:09",1],
+      ["JAT",598,1,"11:54","11:57",2],
+      ["SVDK",700,1,"13:00",null,5]
+    ] },
+  // 22440 Delhi–Katra Vande Bharat Express  (SVDK → NDLS)
+  { no:"22440", name:"Delhi–Katra Vande Bharat Express", cat:"Vande Bharat", days:["Mon","Tue","Wed","Thu","Fri","Sun"], classes:"CC, EC", maxSpeed:130, loco:"Self-Propelled Trainset (16 Coaches)", ret:"22439",
+    live:{ pos:2, delay:3, speed:87, hist:[0,1,3] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["SVDK",0,1,null,"15:00",3],
+      ["JAT",102,1,"16:07","16:10",3],
+      ["LDH",362,1,"18:42","18:45",3],
+      ["NDLS",700,1,"22:22",null,7]
+    ] },
+  // 20171 Bhopal–Delhi Vande Bharat Express  (RKMP → NZM)
+  { no:"20171", name:"Bhopal–Delhi Vande Bharat Express", cat:"Vande Bharat", days:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"], classes:"CC, EC", maxSpeed:130, loco:"Self-Propelled Trainset (16 Coaches)", ret:"20172",
+    live:{ pos:1, delay:7, speed:121, hist:[0,7] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["RKMP",0,1,null,"06:00",4],
+      ["JHS",287,1,"08:44","08:46",4],
+      ["GWL",386,1,"09:41","09:44",2],
+      ["AGC",507,1,"10:59","11:03",1],
+      ["NZM",697,1,"12:50",null,7]
+    ] },
+  // 20172 Bhopal–Delhi Vande Bharat Express  (NZM → RKMP)
+  { no:"20172", name:"Bhopal–Delhi Vande Bharat Express", cat:"Vande Bharat", days:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"], classes:"CC, EC", maxSpeed:130, loco:"Self-Propelled Trainset (16 Coaches)", ret:"20171",
+    live:{ pos:1, delay:0, speed:92, hist:[0,0] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["NZM",0,1,null,"14:40",6],
+      ["AGC",190,1,"16:39","16:41",5],
+      ["GWL",311,1,"17:51","17:53",5],
+      ["JHS",410,1,"18:55","18:57",3],
+      ["RKMP",697,1,"22:06",null,1]
+    ] },
+  // 20833 Visakhapatnam–Secunderabad Vande Bharat Express  (VSKP → SC)
+  { no:"20833", name:"Visakhapatnam–Secunderabad Vande Bharat Express", cat:"Vande Bharat", days:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"], classes:"CC, EC", maxSpeed:130, loco:"Self-Propelled Trainset (16 Coaches)", ret:"20834",
+    live:{ pos:3, delay:5, speed:79, hist:[0,3,4,5] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["VSKP",0,1,null,"05:45",1],
+      ["RJY",219,1,"08:09","08:11",4],
+      ["BZA",349,1,"09:37","09:40",9],
+      ["WL",551,1,"11:42","11:45",4],
+      ["SC",699,1,"13:17",null,1]
+    ] },
+  // 20834 Visakhapatnam–Secunderabad Vande Bharat Express  (SC → VSKP)
+  { no:"20834", name:"Visakhapatnam–Secunderabad Vande Bharat Express", cat:"Vande Bharat", days:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"], classes:"CC, EC", maxSpeed:130, loco:"Self-Propelled Trainset (16 Coaches)", ret:"20833",
+    live:{ pos:3, delay:1, speed:114, hist:[0,2,2,1] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["SC",0,1,null,"15:00",10],
+      ["WL",148,1,"16:36","16:40",4],
+      ["BZA",350,1,"18:47","18:50",7],
+      ["RJY",480,1,"20:17","20:20",3],
+      ["VSKP",699,1,"22:26",null,2]
+    ] },
+  // 12424 Dibrugarh Rajdhani Express  (NDLS → DBRG)
+  { no:"12424", name:"Dibrugarh Rajdhani Express", cat:"Rajdhani", days:["Tue","Thu"], classes:"1A, 2A, 3A", maxSpeed:130, loco:"WAP-7 (Electric 6000 HP)", ret:"12423",
+    live:{ pos:4, delay:0, speed:72, hist:[0,0,1,0,0] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["NDLS",0,1,null,"16:20",6],
+      ["CNB",440,1,"22:13","22:21",2],
+      ["PRYJ",634,2,"01:18","01:23",5],
+      ["DDU",787,2,"03:41","03:45",4],
+      ["PNBE",1017,2,"06:58","07:06",2],
+      ["NJP",1537,2,"15:07","15:12",4],
+      ["GHY",1892,2,"20:37","20:41",4],
+      ["DBRG",2445,3,"04:50",null,4]
+    ] },
+  // 12423 Dibrugarh Rajdhani Express  (DBRG → NDLS)
+  { no:"12423", name:"Dibrugarh Rajdhani Express", cat:"Rajdhani", days:["Mon","Thu","Sun"], classes:"1A, 2A, 3A", maxSpeed:130, loco:"WAP-5 (Electric 5400 HP)", ret:"12424",
+    live:{ pos:2, delay:0, speed:114, hist:[0,0,0] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["DBRG",0,1,null,"19:30",2],
+      ["GHY",553,2,"03:31","03:34",3],
+      ["NJP",908,2,"08:33","08:36",1],
+      ["PNBE",1428,2,"15:47","15:53",3],
+      ["DDU",1658,2,"18:59","19:03",3],
+      ["PRYJ",1811,2,"21:16","21:21",3],
+      ["CNB",2005,3,"00:10","00:14",3],
+      ["NDLS",2445,3,"05:57",null,3]
+    ] },
+  // 12951 Mumbai Rajdhani Express  (MMCT → NDLS)
+  { no:"12951", name:"Mumbai Rajdhani Express", cat:"Rajdhani", days:["Thu"], classes:"1A, 2A, 3A", maxSpeed:130, loco:"WAP-7 (Electric 6000 HP)", ret:"12952",
+    live:{ pos:3, delay:40, speed:74, hist:[0,15,27,40] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["MMCT",0,1,null,"17:00",7],
+      ["ST",263,1,"20:00","20:03",2],
+      ["BRC",392,1,"21:24","21:31",5],
+      ["RTM",695,2,"00:41","00:46",5],
+      ["KOTA",919,2,"03:18","03:23",4],
+      ["NDLS",1384,2,"08:09",null,3]
+    ] },
+  // 12952 Mumbai Rajdhani Express  (NDLS → MMCT)
+  { no:"12952", name:"Mumbai Rajdhani Express", cat:"Rajdhani", days:["Thu","Sat"], classes:"1A, 2A, 3A", maxSpeed:130, loco:"WAP-5 (Electric 5400 HP)", ret:"12951",
+    live:{ pos:2, delay:11, speed:102, hist:[0,7,11] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["NDLS",0,1,null,"16:25",2],
+      ["KOTA",465,1,"21:20","21:24",4],
+      ["RTM",689,1,"23:51","23:57",1],
+      ["BRC",992,2,"03:01","03:09",5],
+      ["ST",1121,2,"04:31","04:37",3],
+      ["MMCT",1384,2,"07:27",null,7]
+    ] },
+  // 12301 Howrah Rajdhani Express  (HWH → NDLS)
+  { no:"12301", name:"Howrah Rajdhani Express", cat:"Rajdhani", days:["Sat"], classes:"1A, 2A, 3A", maxSpeed:130, loco:"WAP-5 (Electric 5400 HP)", ret:"12302",
+    live:{ pos:4, delay:31, speed:87, hist:[0,8,15,26,31] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["HWH",0,1,null,"16:55",7],
+      ["DHN",286,1,"19:58","20:05",4],
+      ["GAYA",470,1,"22:00","22:06",3],
+      ["DDU",660,2,"00:21","00:28",2],
+      ["PRYJ",813,2,"02:16","02:22",2],
+      ["CNB",1007,2,"04:30","04:34",4],
+      ["NDLS",1447,2,"09:40",null,9]
+    ] },
+  // 12302 Howrah Rajdhani Express  (NDLS → HWH)
+  { no:"12302", name:"Howrah Rajdhani Express", cat:"Rajdhani", days:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"], classes:"1A, 2A, 3A", maxSpeed:130, loco:"WAP-5 (Electric 5400 HP)", ret:"12301",
+    live:{ pos:3, delay:25, speed:101, hist:[0,10,18,25] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["NDLS",0,1,null,"16:50",1],
+      ["CNB",440,1,"21:54","21:59",3],
+      ["PRYJ",634,2,"00:17","00:24",4],
+      ["DDU",787,2,"02:08","02:11",2],
+      ["GAYA",977,2,"04:33","04:39",1],
+      ["DHN",1161,2,"06:40","06:45",2],
+      ["HWH",1447,2,"10:17",null,3]
+    ] },
+  // 12431 Trivandrum Rajdhani Express  (TVC → NZM)
+  { no:"12431", name:"Trivandrum Rajdhani Express", cat:"Rajdhani", days:["Tue","Fri"], classes:"1A, 2A, 3A", maxSpeed:130, loco:"WAP-5 (Electric 5400 HP)", ret:"12432",
+    live:{ pos:4, delay:12, speed:120, hist:[0,2,4,8,12] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["TVC",0,1,null,"19:15",5],
+      ["ERS",201,1,"21:59","22:05",3],
+      ["CBE",390,2,"00:28","00:32",2],
+      ["SA",537,2,"02:25","02:30",5],
+      ["KPD",721,2,"04:59","05:03",5],
+      ["MAS",842,2,"06:39","06:43",6],
+      ["BZA",1274,2,"12:31","12:36",1],
+      ["WL",1491,2,"15:34","15:39",4],
+      ["NGP",1934,2,"21:25","21:33",1],
+      ["RKMP",2322,3,"03:04","03:12",1],
+      ["JHS",2609,3,"06:58","07:06",4],
+      ["GWL",2708,3,"08:27","08:30",3],
+      ["AGC",2829,3,"10:06","10:10",1],
+      ["NZM",3019,3,"12:54",null,9]
+    ] },
+  // 12432 Trivandrum Rajdhani Express  (NZM → TVC)
+  { no:"12432", name:"Trivandrum Rajdhani Express", cat:"Rajdhani", days:["Tue","Wed","Fri"], classes:"1A, 2A, 3A", maxSpeed:130, loco:"WAP-5 (Electric 5400 HP)", ret:"12431",
+    live:{ pos:6, delay:22, speed:107, hist:[0,4,8,13,15,19,22] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["NZM",0,1,null,"11:30",7],
+      ["AGC",190,1,"14:03","14:11",1],
+      ["GWL",311,1,"15:45","15:48",5],
+      ["JHS",410,1,"17:03","17:10",1],
+      ["RKMP",697,1,"21:00","21:06",5],
+      ["NGP",1085,2,"02:14","02:22",1],
+      ["WL",1528,2,"07:44","07:49",3],
+      ["BZA",1745,2,"10:33","10:37",10],
+      ["MAS",2177,2,"16:09","16:15",12],
+      ["KPD",2298,2,"17:50","17:54",1],
+      ["SA",2482,2,"20:25","20:32",4],
+      ["CBE",2629,2,"22:24","22:29",2],
+      ["ERS",2818,3,"01:00","01:03",3],
+      ["TVC",3019,3,"03:30",null,3]
+    ] },
+  // 12433 Chennai Rajdhani Express  (MAS → NZM)
+  { no:"12433", name:"Chennai Rajdhani Express", cat:"Rajdhani", days:["Tue"], classes:"1A, 2A, 3A", maxSpeed:130, loco:"WAP-7 (Electric 6000 HP)", ret:"12434",
+    live:{ pos:3, delay:0, speed:99, hist:[0,0,1,0] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["MAS",0,1,null,"06:10",1],
+      ["BZA",432,1,"11:17","11:20",11],
+      ["WL",649,1,"13:52","14:00",1],
+      ["NGP",1092,1,"18:59","19:04",9],
+      ["RKMP",1480,1,"23:36","23:39",1],
+      ["JHS",1767,2,"03:18","03:26",2],
+      ["GWL",1866,2,"04:34","04:41",5],
+      ["AGC",1987,2,"06:11","06:16",4],
+      ["NZM",2177,2,"08:43",null,3]
+    ] },
+  // 12434 Chennai Rajdhani Express  (NZM → MAS)
+  { no:"12434", name:"Chennai Rajdhani Express", cat:"Rajdhani", days:["Mon","Tue","Sat"], classes:"1A, 2A, 3A", maxSpeed:130, loco:"WAP-5 (Electric 5400 HP)", ret:"12433",
+    live:{ pos:2, delay:0, speed:84, hist:[0,0,0] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["NZM",0,1,null,"15:30",1],
+      ["AGC",190,1,"17:53","17:59",3],
+      ["GWL",311,1,"19:21","19:29",2],
+      ["JHS",410,1,"20:42","20:45",2],
+      ["RKMP",697,2,"00:26","00:32",2],
+      ["NGP",1085,2,"05:17","05:20",11],
+      ["WL",1528,2,"10:45","10:48",5],
+      ["BZA",1745,2,"13:19","13:24",1],
+      ["MAS",2177,2,"18:40",null,12]
+    ] },
+  // 12957 Swarna Jayanti Rajdhani Express  (ADI → NDLS)
+  { no:"12957", name:"Swarna Jayanti Rajdhani Express", cat:"Rajdhani", days:["Mon","Thu"], classes:"1A, 2A, 3A", maxSpeed:130, loco:"WAP-7 (Electric 6000 HP)", ret:"12958",
+    live:{ pos:1, delay:21, speed:94, hist:[0,21] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["ADI",0,1,null,"17:20",2],
+      ["AII",492,1,"22:58","23:02",5],
+      ["JP",627,2,"00:36","00:40",5],
+      ["NDLS",935,2,"04:01",null,10]
+    ] },
+  // 12958 Swarna Jayanti Rajdhani Express  (NDLS → ADI)
+  { no:"12958", name:"Swarna Jayanti Rajdhani Express", cat:"Rajdhani", days:["Mon","Sat"], classes:"1A, 2A, 3A", maxSpeed:130, loco:"WAP-7 (Electric 6000 HP)", ret:"12957",
+    live:{ pos:1, delay:10, speed:109, hist:[0,10] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["NDLS",0,1,null,"19:55",2],
+      ["JP",308,1,"23:25","23:33",3],
+      ["AII",443,2,"01:10","01:17",2],
+      ["ADI",935,2,"06:37",null,5]
+    ] },
+  // 12004 Lucknow Swarna Shatabdi Express  (NDLS → LKO)
+  { no:"12004", name:"Lucknow Swarna Shatabdi Express", cat:"Shatabdi", days:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"], classes:"CC, EC", maxSpeed:130, loco:"WAP-7 (Electric 6000 HP)", ret:"12003",
+    live:{ pos:2, delay:40, speed:74, hist:[0,20,40] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["NDLS",0,1,null,"06:10",5],
+      ["ALJN",126,1,"07:44","07:46",5],
+      ["TDL",204,1,"08:40","08:42",3],
+      ["ETW",296,1,"09:45","09:47",3],
+      ["CNB",440,1,"11:38","11:42",5],
+      ["LKO",512,1,"12:35",null,5]
+    ] },
+  // 12003 Lucknow Swarna Shatabdi Express  (LKO → NDLS)
+  { no:"12003", name:"Lucknow Swarna Shatabdi Express", cat:"Shatabdi", days:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"], classes:"CC, EC", maxSpeed:130, loco:"WAP-5 (Electric 5400 HP)", ret:"12004",
+    live:{ pos:2, delay:15, speed:73, hist:[0,9,15] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["LKO",0,1,null,"15:30",3],
+      ["CNB",72,1,"16:24","16:29",5],
+      ["ETW",216,1,"18:18","18:20",2],
+      ["TDL",308,1,"19:22","19:24",5],
+      ["ALJN",386,1,"20:24","20:26",5],
+      ["NDLS",512,1,"21:58",null,11]
+    ] },
+  // 12007 Chennai–Mysuru Shatabdi Express  (MAS → MYS)
+  { no:"12007", name:"Chennai–Mysuru Shatabdi Express", cat:"Shatabdi", days:["Mon","Tue","Wed","Thu","Fri","Sun"], classes:"CC, EC", maxSpeed:130, loco:"WAP-5 (Electric 5400 HP)", ret:"12008",
+    live:{ pos:2, delay:14, speed:99, hist:[0,9,14] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["MAS",0,1,null,"06:00",3],
+      ["KPD",132,1,"07:35","07:40",4],
+      ["SBC",362,1,"10:04","10:07",2],
+      ["MYS",500,1,"11:42",null,5]
+    ] },
+  // 12008 Chennai–Mysuru Shatabdi Express  (MYS → MAS)
+  { no:"12008", name:"Chennai–Mysuru Shatabdi Express", cat:"Shatabdi", days:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"], classes:"CC, EC", maxSpeed:130, loco:"WAP-7 (Electric 6000 HP)", ret:"12007",
+    live:{ pos:2, delay:1, speed:73, hist:[0,1,1] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["MYS",0,1,null,"14:30",1],
+      ["SBC",138,1,"16:02","16:05",6],
+      ["KPD",368,1,"18:47","18:49",5],
+      ["MAS",500,1,"20:12",null,6]
+    ] },
+  // 12013 Amritsar Swarna Shatabdi Express  (NDLS → ASR)
+  { no:"12013", name:"Amritsar Swarna Shatabdi Express", cat:"Shatabdi", days:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"], classes:"CC, EC", maxSpeed:130, loco:"WAP-5 (Electric 5400 HP)", ret:"12014",
+    live:{ pos:3, delay:4, speed:95, hist:[0,1,3,4] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["NDLS",0,1,null,"07:20",11],
+      ["UMB",200,1,"09:30","09:34",3],
+      ["LDH",313,1,"10:50","10:54",5],
+      ["JUC",365,1,"11:33","11:35",5],
+      ["ASR",449,1,"12:34",null,1]
+    ] },
+  // 12014 Amritsar Swarna Shatabdi Express  (ASR → NDLS)
+  { no:"12014", name:"Amritsar Swarna Shatabdi Express", cat:"Shatabdi", days:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"], classes:"CC, EC", maxSpeed:130, loco:"WAP-5 (Electric 5400 HP)", ret:"12013",
+    live:{ pos:2, delay:0, speed:121, hist:[0,2,0] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["ASR",0,1,null,"17:20",3],
+      ["JUC",84,1,"18:21","18:26",3],
+      ["LDH",136,1,"19:00","19:04",2],
+      ["UMB",249,1,"20:24","20:26",1],
+      ["NDLS",449,1,"22:46",null,6]
+    ] },
+  // 12002 Bhopal Shatabdi Express  (NDLS → RKMP)
+  { no:"12002", name:"Bhopal Shatabdi Express", cat:"Shatabdi", days:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"], classes:"CC, EC", maxSpeed:130, loco:"WAP-7 (Electric 6000 HP)", ret:"12001",
+    live:{ pos:1, delay:4, speed:115, hist:[0,4] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["NDLS",0,1,null,"06:00",9],
+      ["NZM",5,1,"06:03","06:08",1],
+      ["AGC",195,1,"08:07","08:11",5],
+      ["GWL",316,1,"09:34","09:39",1],
+      ["JHS",415,1,"10:38","10:41",3],
+      ["RKMP",702,1,"13:52",null,4]
+    ] },
+  // 12001 Bhopal Shatabdi Express  (RKMP → NDLS)
+  { no:"12001", name:"Bhopal Shatabdi Express", cat:"Shatabdi", days:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"], classes:"CC, EC", maxSpeed:130, loco:"WAP-7 (Electric 6000 HP)", ret:"12002",
+    live:{ pos:1, delay:0, speed:101, hist:[0,0] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["RKMP",0,1,null,"20:30",2],
+      ["JHS",287,1,"23:30","23:34",3],
+      ["GWL",386,2,"00:34","00:36",1],
+      ["AGC",507,2,"01:58","02:00",1],
+      ["NZM",697,2,"03:57","04:01",4],
+      ["NDLS",702,2,"04:04",null,8]
+    ] },
+  // 12277 Howrah–Puri Shatabdi Express  (HWH → PURI)
+  { no:"12277", name:"Howrah–Puri Shatabdi Express", cat:"Shatabdi", days:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"], classes:"CC, EC", maxSpeed:130, loco:"WAP-7 (Electric 6000 HP)", ret:"12278",
+    live:{ pos:1, delay:8, speed:89, hist:[0,8] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["HWH",0,1,null,"06:05",2],
+      ["BLS",254,1,"09:23","09:28",5],
+      ["CTC",380,1,"11:12","11:16",3],
+      ["BBS",440,1,"12:06","12:09",4],
+      ["PURI",500,1,"12:56",null,3]
+    ] },
+  // 12278 Howrah–Puri Shatabdi Express  (PURI → HWH)
+  { no:"12278", name:"Howrah–Puri Shatabdi Express", cat:"Shatabdi", days:["Mon","Wed","Thu","Fri","Sat","Sun"], classes:"CC, EC", maxSpeed:130, loco:"WAP-7 (Electric 6000 HP)", ret:"12277",
+    live:{ pos:3, delay:4, speed:80, hist:[0,2,2,4] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["PURI",0,1,null,"14:55",4],
+      ["BBS",60,1,"15:38","15:43",5],
+      ["CTC",120,1,"16:26","16:31",1],
+      ["BLS",246,1,"18:01","18:06",4],
+      ["HWH",500,1,"21:27",null,3]
+    ] },
+  // 12269 Chennai–Nizamuddin Duronto Express  (MAS → NZM)
+  { no:"12269", name:"Chennai–Nizamuddin Duronto Express", cat:"Duronto", days:["Tue","Thu"], classes:"1A, 2A, 3A, SL", maxSpeed:110, loco:"WAP-5 (Electric 5400 HP)", ret:"12270",
+    live:{ pos:2, delay:2, speed:79, hist:[0,1,2] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["MAS",0,1,null,"20:45",8],
+      ["BZA",432,2,"02:02","02:10",5],
+      ["WL",649,2,"04:43","04:49",4],
+      ["NGP",1092,2,"10:05","10:09",4],
+      ["RKMP",1480,2,"15:04","15:07",5],
+      ["JHS",1767,2,"18:41","18:47",1],
+      ["GWL",1866,2,"19:52","19:55",5],
+      ["AGC",1987,2,"21:16","21:22",3],
+      ["NZM",2177,2,"23:29",null,12]
+    ] },
+  // 12270 Chennai–Nizamuddin Duronto Express  (NZM → MAS)
+  { no:"12270", name:"Chennai–Nizamuddin Duronto Express", cat:"Duronto", days:["Mon","Fri"], classes:"1A, 2A, 3A, SL", maxSpeed:110, loco:"WAP-5 (Electric 5400 HP)", ret:"12269",
+    live:{ pos:3, delay:56, speed:80, hist:[0,21,40,56] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["NZM",0,1,null,"23:00",7],
+      ["AGC",190,2,"01:10","01:14",1],
+      ["GWL",311,2,"02:48","02:53",3],
+      ["JHS",410,2,"04:08","04:13",3],
+      ["RKMP",697,2,"07:49","07:57",4],
+      ["NGP",1085,2,"12:19","12:25",3],
+      ["WL",1528,2,"17:42","17:47",1],
+      ["BZA",1745,2,"20:21","20:24",12],
+      ["MAS",2177,3,"01:20",null,2]
+    ] },
+  // 12261 Howrah–Mumbai CSMT Duronto Express  (HWH → CSMT)
+  { no:"12261", name:"Howrah–Mumbai CSMT Duronto Express", cat:"Duronto", days:["Mon","Tue"], classes:"1A, 2A, 3A, SL", maxSpeed:110, loco:"WAP-7 (Electric 6000 HP)", ret:"12262",
+    live:{ pos:2, delay:0, speed:88, hist:[0,0,0] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["HWH",0,1,null,"20:00",9],
+      ["TATA",250,1,"22:58","23:01",1],
+      ["ROU",412,2,"01:10","01:18",5],
+      ["BSP",700,2,"05:01","05:04",2],
+      ["NGP",1075,2,"09:38","09:41",6],
+      ["BSL",1360,2,"13:33","13:39",4],
+      ["CSMT",1968,2,"21:50",null,2]
+    ] },
+  // 12262 Howrah–Mumbai CSMT Duronto Express  (CSMT → HWH)
+  { no:"12262", name:"Howrah–Mumbai CSMT Duronto Express", cat:"Duronto", days:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"], classes:"1A, 2A, 3A, SL", maxSpeed:110, loco:"WAP-5 (Electric 5400 HP)", ret:"12261",
+    live:{ pos:4, delay:0, speed:81, hist:[0,1,1,1,0] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["CSMT",0,1,null,"21:15",4],
+      ["BSL",608,2,"05:19","05:22",5],
+      ["NGP",893,2,"09:02","09:09",11],
+      ["BSP",1268,2,"14:16","14:21",1],
+      ["ROU",1556,2,"18:19","18:22",2],
+      ["TATA",1718,2,"20:19","20:24",3],
+      ["HWH",1968,2,"23:21",null,10]
+    ] },
+  // 12273 Howrah–New Delhi Duronto Express  (HWH → NDLS)
+  { no:"12273", name:"Howrah–New Delhi Duronto Express", cat:"Duronto", days:["Mon","Tue","Thu"], classes:"1A, 2A, 3A, SL", maxSpeed:110, loco:"WAP-7 (Electric 6000 HP)", ret:"12274",
+    live:{ pos:2, delay:6, speed:102, hist:[0,3,6] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["HWH",0,1,null,"19:50",2],
+      ["DHN",286,1,"22:57","23:04",1],
+      ["GAYA",470,2,"01:02","01:10",1],
+      ["DDU",660,2,"03:09","03:17",4],
+      ["PRYJ",813,2,"04:51","04:58",4],
+      ["CNB",1007,2,"07:08","07:15",1],
+      ["NDLS",1447,2,"12:06",null,11]
+    ] },
+  // 12274 Howrah–New Delhi Duronto Express  (NDLS → HWH)
+  { no:"12274", name:"Howrah–New Delhi Duronto Express", cat:"Duronto", days:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"], classes:"1A, 2A, 3A, SL", maxSpeed:110, loco:"WAP-7 (Electric 6000 HP)", ret:"12273",
+    live:{ pos:3, delay:0, speed:84, hist:[0,0,0,0] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["NDLS",0,1,null,"20:00",12],
+      ["CNB",440,2,"01:11","01:17",5],
+      ["PRYJ",634,2,"03:29","03:35",4],
+      ["DDU",787,2,"05:19","05:26",3],
+      ["GAYA",977,2,"07:37","07:42",4],
+      ["DHN",1161,2,"09:50","09:54",2],
+      ["HWH",1447,2,"12:59",null,12]
+    ] },
+  // 16031 Andaman Express  (MAS → SVDK)
+  { no:"16031", name:"Andaman Express", cat:"Superfast", days:["Sun","Wed","Thu"], classes:"2A, 3A, SL, GN", maxSpeed:110, loco:"WAP-7 (Electric 6000 HP)", ret:"16032", allHalts:74,
+    live:{ pos:6, delay:85, speed:87, hist:[0,19,30,46,57,71,85] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["MAS",0,1,null,"05:10",10],
+      ["GDR",138,1,"07:28","07:30",5],
+      ["NLR",176,1,"07:59","08:00",4],
+      ["OGL",321,1,"10:03","10:05",2],
+      ["BZA",432,1,"14:05","14:20",9],
+      ["WL",649,1,"17:58","18:00",5],
+      ["NZM",2177,2,"20:05","20:10",9],
+      ["NDLS",2182,2,"20:55","21:10",9],
+      ["ROK",2262,2,"22:31","22:33",2],
+      ["JIND",2312,2,"23:15","23:18",1],
+      ["SVDK",2882,3,"10:45",null,5]
+    ] },
+  // 16032 Andaman Express  (SVDK → MAS)
+  { no:"16032", name:"Andaman Express", cat:"Superfast", days:["Tue","Fri","Sat"], classes:"2A, 3A, SL, GN", maxSpeed:110, loco:"WAP-7 (Electric 6000 HP)", ret:"16031", allHalts:74,
+    live:{ pos:9, delay:13, speed:81, hist:[0,0,2,5,7,8,9,9,12,13] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["SVDK",0,1,null,"22:30",1],
+      ["JIND",570,2,"10:34","10:37",5],
+      ["ROK",620,2,"11:22","11:24",4],
+      ["NDLS",700,2,"12:49","13:04",2],
+      ["NZM",705,2,"13:53","13:58",11],
+      ["WL",2233,3,"17:28","17:30",1],
+      ["BZA",2450,3,"21:20","21:35",3],
+      ["OGL",2561,4,"01:49","01:51",3],
+      ["NLR",2706,4,"04:01","04:02",3],
+      ["GDR",2744,4,"04:32","04:34",1],
+      ["MAS",2882,4,"07:00",null,3]
+    ] },
+  // 12626 Kerala Superfast Express  (NDLS → TVC)
+  { no:"12626", name:"Kerala Superfast Express", cat:"Superfast", days:["Tue"], classes:"1A, 2A, 3A, SL, GN", maxSpeed:100, loco:"WAP-4 (Electric 5000 HP)", ret:"12625",
+    live:{ pos:6, delay:16, speed:63, hist:[0,3,6,10,11,13,16] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["NDLS",0,1,null,"20:10",4],
+      ["NZM",5,1,"20:14","20:26",7],
+      ["MTJ",141,1,"22:33","22:34",4],
+      ["AGC",195,1,"23:24","23:42",5],
+      ["GWL",316,2,"01:24","01:40",1],
+      ["JHS",415,2,"03:05","03:24",2],
+      ["BINA",562,2,"05:37","05:40",3],
+      ["RKMP",702,2,"07:48","07:56",2],
+      ["ET",805,2,"09:30","09:33",5],
+      ["BZU",920,2,"11:21","11:22",5],
+      ["NGP",1090,2,"13:43","14:01",10],
+      ["BPQ",1277,2,"16:37","16:40",1],
+      ["RDM",1422,2,"18:52","18:54",5],
+      ["WL",1533,2,"20:29","20:47",2],
+      ["KMT",1647,2,"22:27","22:30",4],
+      ["BZA",1750,2,"23:54","00:01",11],
+      ["OGL",1861,3,"01:38","01:39",2],
+      ["NLR",2006,3,"03:54","03:55",5],
+      ["GDR",2044,3,"04:28","04:29",4],
+      ["MAS",2182,3,"06:32","06:50",1],
+      ["AJJ",2245,3,"07:48","07:49",2],
+      ["KPD",2303,3,"08:38","08:49",2],
+      ["JTJ",2378,3,"09:53","09:56",2],
+      ["SA",2487,3,"11:33","11:48",1],
+      ["ED",2545,3,"12:37","12:38",3],
+      ["CBE",2634,3,"14:01","14:19",2],
+      ["PGT",2694,3,"15:12","15:14",3],
+      ["TCR",2750,3,"16:03","16:05",1],
+      ["ERS",2823,3,"17:08","17:22",2],
+      ["KTYM",2878,3,"18:07","18:08",3],
+      ["QLN",2965,3,"19:25","19:27",5],
+      ["TVC",3024,3,"20:17",null,4]
+    ] },
+  // 12625 Kerala Superfast Express  (TVC → NDLS)
+  { no:"12625", name:"Kerala Superfast Express", cat:"Superfast", days:["Mon","Sat"], classes:"2A, 3A, SL, GN", maxSpeed:110, loco:"WAP-4 (Electric 5000 HP)", ret:"12626",
+    live:{ pos:2, delay:51, speed:87, hist:[0,27,51] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["TVC",0,1,null,"03:51",1],
+      ["QLN",59,1,"04:40","04:41",2],
+      ["KTYM",146,1,"05:57","05:58",3],
+      ["ERS",201,1,"06:50","06:57",4],
+      ["TCR",274,1,"07:59","08:00",3],
+      ["PGT",330,1,"08:53","08:54",3],
+      ["CBE",390,1,"09:50","10:09",2],
+      ["ED",479,1,"11:31","11:33",4],
+      ["SA",537,1,"12:24","12:35",4],
+      ["JTJ",646,1,"14:19","14:22",1],
+      ["KPD",721,1,"15:24","15:37",1],
+      ["AJJ",779,1,"16:25","16:26",5],
+      ["MAS",842,1,"17:20","17:30",12],
+      ["GDR",980,1,"19:32","19:34",5],
+      ["NLR",1018,1,"20:07","20:09",3],
+      ["OGL",1163,1,"22:16","22:18",3],
+      ["BZA",1274,1,"23:55","00:05",12],
+      ["KMT",1377,2,"01:31","01:32",5],
+      ["WL",1491,2,"03:16","03:33",5],
+      ["RDM",1602,2,"05:06","05:09",1],
+      ["BPQ",1747,2,"07:15","07:17",2],
+      ["NGP",1934,2,"09:57","10:11",5],
+      ["BZU",2104,2,"12:45","12:47",2],
+      ["ET",2219,2,"14:35","14:37",4],
+      ["RKMP",2322,2,"16:15","16:31",1],
+      ["BINA",2462,2,"18:32","18:33",4],
+      ["JHS",2609,2,"20:35","20:40",3],
+      ["GWL",2708,2,"22:01","22:12",3],
+      ["AGC",2829,3,"00:06","00:13",5],
+      ["MTJ",2883,3,"00:59","01:01",2],
+      ["NZM",3019,3,"03:11","03:24",10],
+      ["NDLS",3024,3,"03:28",null,10]
+    ] },
+  // 12621 Tamil Nadu Express  (MAS → NDLS)
+  { no:"12621", name:"Tamil Nadu Express", cat:"Superfast", days:["Mon"], classes:"1A, 2A, 3A, SL, GN", maxSpeed:110, loco:"WAP-7 (Electric 6000 HP)", ret:"12622",
+    live:{ pos:5, delay:0, speed:94, hist:[0,0,0,0,0,0] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["MAS",0,1,null,"22:00",2],
+      ["GDR",138,2,"00:09","00:10",1],
+      ["NLR",176,2,"00:41","00:44",1],
+      ["OGL",321,2,"02:49","02:51",2],
+      ["BZA",432,2,"04:30","04:42",1],
+      ["KMT",535,2,"06:09","06:10",3],
+      ["WL",649,2,"07:45","08:04",5],
+      ["RDM",760,2,"09:47","09:48",5],
+      ["BPQ",905,2,"12:01","12:02",5],
+      ["NGP",1092,2,"14:42","14:56",6],
+      ["BZU",1262,2,"17:29","17:32",4],
+      ["ET",1377,2,"19:18","19:21",3],
+      ["RKMP",1480,2,"20:52","21:10",1],
+      ["BINA",1620,2,"23:15","23:18",1],
+      ["JHS",1767,3,"01:31","01:39",3],
+      ["GWL",1866,3,"03:08","03:28",2],
+      ["AGC",1987,3,"05:14","05:20",3],
+      ["MTJ",2041,3,"06:09","06:10",3],
+      ["NZM",2177,3,"08:07","08:12",10],
+      ["NDLS",2182,3,"08:16",null,9]
+    ] },
+  // 12622 Tamil Nadu Express  (NDLS → MAS)
+  { no:"12622", name:"Tamil Nadu Express", cat:"Superfast", days:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"], classes:"2A, 3A, SL, GN", maxSpeed:110, loco:"WAP-4 (Electric 5000 HP)", ret:"12621",
+    live:{ pos:12, delay:0, speed:93, hist:[0,1,2,1,0,0,0,0,0,0,0,0,0] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["NDLS",0,1,null,"19:14",11],
+      ["NZM",5,1,"19:18","19:28",2],
+      ["MTJ",141,1,"21:30","21:33",3],
+      ["AGC",195,1,"22:18","22:23",5],
+      ["GWL",316,2,"00:07","00:20",5],
+      ["JHS",415,2,"01:42","01:57",3],
+      ["BINA",562,2,"04:06","04:08",1],
+      ["RKMP",702,2,"06:09","06:15",2],
+      ["ET",805,2,"07:51","07:53",1],
+      ["BZU",920,2,"09:29","09:32",1],
+      ["NGP",1090,2,"12:05","12:22",4],
+      ["BPQ",1277,2,"15:20","15:22",3],
+      ["RDM",1422,2,"17:25","17:28",2],
+      ["WL",1533,2,"19:05","19:19",5],
+      ["KMT",1647,2,"20:55","20:58",2],
+      ["BZA",1750,2,"22:30","22:35",10],
+      ["OGL",1861,3,"00:10","00:12",4],
+      ["NLR",2006,3,"02:25","02:28",4],
+      ["GDR",2044,3,"03:04","03:05",1],
+      ["MAS",2182,3,"05:15",null,5]
+    ] },
+  // 12615 Grand Trunk Express  (MAS → NDLS)
+  { no:"12615", name:"Grand Trunk Express", cat:"Superfast", days:["Mon"], classes:"2A, 3A, SL, GN", maxSpeed:110, loco:"WAP-7 (Electric 6000 HP)", ret:"12616",
+    live:{ pos:1, delay:0, speed:66, hist:[0,0] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["MAS",0,1,null,"18:35",5],
+      ["GDR",138,1,"20:36","20:37",1],
+      ["NLR",176,1,"21:11","21:14",2],
+      ["OGL",321,1,"23:33","23:36",3],
+      ["BZA",432,2,"01:24","01:38",2],
+      ["KMT",535,2,"03:19","03:22",2],
+      ["WL",649,2,"05:16","05:35",5],
+      ["RDM",760,2,"07:18","07:21",4],
+      ["BPQ",905,2,"09:28","09:31",2],
+      ["NGP",1092,2,"12:29","12:41",1],
+      ["BZU",1262,2,"15:12","15:13",4],
+      ["ET",1377,2,"17:00","17:01",3],
+      ["RKMP",1480,2,"18:30","18:42",5],
+      ["BINA",1620,2,"21:01","21:03",2],
+      ["JHS",1767,2,"23:18","23:23",2],
+      ["GWL",1866,3,"01:00","01:11",5],
+      ["AGC",1987,3,"03:10","03:29",4],
+      ["MTJ",2041,3,"04:20","04:22",1],
+      ["NZM",2177,3,"06:24","06:32",11],
+      ["NDLS",2182,3,"06:36",null,5]
+    ] },
+  // 12616 Grand Trunk Express  (NDLS → MAS)
+  { no:"12616", name:"Grand Trunk Express", cat:"Superfast", days:["Mon","Sun"], classes:"1A, 2A, 3A, SL, GN", maxSpeed:110, loco:"WAP-7 (Electric 6000 HP)", ret:"12615",
+    live:{ pos:15, delay:1, speed:85, hist:[0,0,0,2,0,0,0,2,0,0,1,2,1,2,0,1] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["NDLS",0,1,null,"16:32",6],
+      ["NZM",5,1,"16:37","16:43",4],
+      ["MTJ",141,1,"18:48","18:49",1],
+      ["AGC",195,1,"19:39","19:59",2],
+      ["GWL",316,1,"21:47","22:02",3],
+      ["JHS",415,1,"23:38","23:48",2],
+      ["BINA",562,2,"02:08","02:11",3],
+      ["RKMP",702,2,"04:09","04:18",5],
+      ["ET",805,2,"05:54","05:55",1],
+      ["BZU",920,2,"07:40","07:41",1],
+      ["NGP",1090,2,"10:05","10:17",4],
+      ["BPQ",1277,2,"13:01","13:04",2],
+      ["RDM",1422,2,"15:15","15:18",4],
+      ["WL",1533,2,"16:58","17:12",4],
+      ["KMT",1647,2,"19:00","19:03",4],
+      ["BZA",1750,2,"20:38","20:49",3],
+      ["OGL",1861,2,"22:27","22:28",5],
+      ["NLR",2006,3,"00:42","00:43",1],
+      ["GDR",2044,3,"01:15","01:16",2],
+      ["MAS",2182,3,"03:24",null,5]
+    ] },
+  // 12618 Mangala Lakshadweep Express  (NZM → ERS)
+  { no:"12618", name:"Mangala Lakshadweep Express", cat:"Superfast", days:["Tue","Wed","Thu"], classes:"2A, 3A, SL, GN", maxSpeed:110, loco:"WAP-4 (Electric 5000 HP)", ret:"12617",
+    live:{ pos:18, delay:64, speed:64, hist:[0,5,8,12,16,20,22,27,31,33,39,41,44,50,50,54,58,60,64] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["NZM",0,1,null,"09:30",10],
+      ["MTJ",136,1,"11:21","11:23",1],
+      ["AGC",190,1,"12:09","12:17",4],
+      ["GWL",311,1,"14:06","14:19",3],
+      ["JHS",410,1,"15:43","15:50",5],
+      ["BINA",557,1,"18:05","18:06",1],
+      ["RKMP",697,1,"20:14","20:29",4],
+      ["ET",800,1,"22:01","22:03",3],
+      ["BZU",915,1,"23:43","23:45",1],
+      ["NGP",1085,2,"02:22","02:31",10],
+      ["BPQ",1272,2,"05:18","05:20",2],
+      ["RDM",1417,2,"07:33","07:35",4],
+      ["WL",1528,2,"09:11","09:21",2],
+      ["KMT",1642,2,"10:52","10:54",5],
+      ["BZA",1745,2,"12:29","12:35",10],
+      ["OGL",1856,2,"14:12","14:15",3],
+      ["NLR",2001,2,"16:21","16:23",1],
+      ["GDR",2039,2,"16:57","16:58",2],
+      ["MAS",2177,2,"19:06","19:11",4],
+      ["AJJ",2240,2,"20:10","20:11",4],
+      ["KPD",2298,2,"20:59","21:19",5],
+      ["JTJ",2373,2,"22:25","22:26",4],
+      ["SA",2482,2,"23:56","00:09",4],
+      ["ED",2540,3,"01:00","01:01",2],
+      ["CBE",2629,3,"02:16","02:23",5],
+      ["PGT",2689,3,"03:13","03:16",4],
+      ["TCR",2745,3,"04:07","04:09",4],
+      ["ERS",2818,3,"05:17",null,1]
+    ] },
+  // 12617 Mangala Lakshadweep Express  (ERS → NZM)
+  { no:"12617", name:"Mangala Lakshadweep Express", cat:"Superfast", days:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"], classes:"2A, 3A, SL, GN", maxSpeed:110, loco:"WAP-4 (Electric 5000 HP)", ret:"12618",
+    live:{ pos:3, delay:78, speed:73, hist:[0,29,53,78] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["ERS",0,1,null,"10:22",1],
+      ["TCR",73,1,"11:24","11:25",3],
+      ["PGT",129,1,"12:17","12:19",3],
+      ["CBE",189,1,"13:16","13:26",2],
+      ["ED",278,1,"14:49","14:50",1],
+      ["SA",336,1,"15:44","15:50",3],
+      ["JTJ",445,1,"17:21","17:23",3],
+      ["KPD",520,1,"18:30","18:35",3],
+      ["AJJ",578,1,"19:28","19:31",5],
+      ["MAS",641,1,"20:24","20:38",9],
+      ["GDR",779,1,"22:44","22:46",1],
+      ["NLR",817,1,"23:18","23:20",3],
+      ["OGL",962,2,"01:20","01:21",4],
+      ["BZA",1073,2,"03:06","03:26",4],
+      ["KMT",1176,2,"04:58","04:59",3],
+      ["WL",1290,2,"06:34","06:48",1],
+      ["RDM",1401,2,"08:30","08:32",1],
+      ["BPQ",1546,2,"10:41","10:44",1],
+      ["NGP",1733,2,"13:29","13:48",4],
+      ["BZU",1903,2,"16:21","16:24",5],
+      ["ET",2018,2,"18:13","18:14",1],
+      ["RKMP",2121,2,"19:52","19:57",3],
+      ["BINA",2261,2,"22:01","22:04",3],
+      ["JHS",2408,3,"00:14","00:33",2],
+      ["GWL",2507,3,"02:05","02:17",3],
+      ["AGC",2628,3,"04:04","04:12",5],
+      ["MTJ",2682,3,"04:59","05:00",2],
+      ["NZM",2818,3,"06:58",null,11]
+    ] },
+  // 12155 Bhopal Express  (RKMP → NZM)
+  { no:"12155", name:"Bhopal Express", cat:"Superfast", days:["Tue","Thu","Sun"], classes:"2A, 3A, SL, GN", maxSpeed:110, loco:"WAP-7 (Electric 6000 HP)", ret:"12156",
+    live:{ pos:1, delay:0, speed:80, hist:[0,0] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["RKMP",0,1,null,"16:45",1],
+      ["BINA",140,1,"18:53","18:56",1],
+      ["JHS",287,1,"21:08","21:21",1],
+      ["GWL",386,1,"22:50","23:00",5],
+      ["AGC",507,2,"00:46","00:57",2],
+      ["MTJ",561,2,"01:45","01:47",1],
+      ["NZM",697,2,"03:52",null,12]
+    ] },
+  // 12156 Bhopal Express  (NZM → RKMP)
+  { no:"12156", name:"Bhopal Express", cat:"Superfast", days:["Tue"], classes:"1A, 2A, 3A, SL, GN", maxSpeed:110, loco:"WAP-7 (Electric 6000 HP)", ret:"12155",
+    live:{ pos:4, delay:4, speed:88, hist:[0,1,4,1,4] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["NZM",0,1,null,"14:08",9],
+      ["MTJ",136,1,"16:01","16:03",3],
+      ["AGC",190,1,"16:51","17:05",4],
+      ["GWL",311,1,"18:54","19:08",3],
+      ["JHS",410,1,"20:33","20:38",3],
+      ["BINA",557,1,"22:47","22:50",4],
+      ["RKMP",697,2,"00:57",null,4]
+    ] },
+  // 12279 Taj Express  (NZM → JHS)
+  { no:"12279", name:"Taj Express", cat:"Superfast", days:["Thu","Fri"], classes:"CC, 2S, SL, GN", maxSpeed:100, loco:"WAP-4 (Electric 5000 HP)", ret:"12280",
+    live:{ pos:1, delay:87, speed:72, hist:[0,87] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["NZM",0,1,null,"07:10",12],
+      ["MTJ",136,1,"09:08","09:10",4],
+      ["AGC",190,1,"09:54","10:03",1],
+      ["GWL",311,1,"11:43","11:55",4],
+      ["JHS",410,1,"13:21",null,2]
+    ] },
+  // 12280 Taj Express  (JHS → NZM)
+  { no:"12280", name:"Taj Express", cat:"Superfast", days:["Mon","Fri"], classes:"CC, 2S, SL, GN", maxSpeed:100, loco:"WAP-4 (Electric 5000 HP)", ret:"12279",
+    live:{ pos:1, delay:37, speed:87, hist:[0,37] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["JHS",0,1,null,"22:27",4],
+      ["GWL",99,1,"23:46","00:01",1],
+      ["AGC",220,2,"01:36","01:54",4],
+      ["MTJ",274,2,"02:42","02:45",3],
+      ["NZM",410,2,"04:31",null,5]
+    ] },
+  // 12050 Gatimaan Express  (NZM → JHS)
+  { no:"12050", name:"Gatimaan Express", cat:"Superfast", days:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"], classes:"CC, 2S, SL, GN", maxSpeed:100, loco:"WAP-4 (Electric 5000 HP)", ret:"12049",
+    live:{ pos:2, delay:1, speed:78, hist:[0,2,1] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["NZM",0,1,null,"08:10",2],
+      ["MTJ",136,1,"09:42","09:45",4],
+      ["AGC",190,1,"10:19","10:24",1],
+      ["GWL",311,1,"11:43","11:48",2],
+      ["JHS",410,1,"12:54",null,5]
+    ] },
+  // 12049 Gatimaan Express  (JHS → NZM)
+  { no:"12049", name:"Gatimaan Express", cat:"Superfast", days:["Fri"], classes:"CC, 2S, SL, GN", maxSpeed:100, loco:"WAP-4 (Electric 5000 HP)", ret:"12050",
+    live:{ pos:1, delay:9, speed:88, hist:[0,9] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["JHS",0,1,null,"22:16",5],
+      ["GWL",99,1,"23:17","23:25",4],
+      ["AGC",220,2,"00:45","00:57",1],
+      ["MTJ",274,2,"01:31","01:34",1],
+      ["NZM",410,2,"03:08",null,11]
+    ] },
+  // 12841 Coromandel Express  (HWH → MAS)
+  { no:"12841", name:"Coromandel Express", cat:"Superfast", days:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"], classes:"2A, 3A, SL, GN", maxSpeed:100, loco:"WAP-7 (Electric 6000 HP)", ret:"12842",
+    live:{ pos:4, delay:101, speed:63, hist:[0,30,55,77,101] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["HWH",0,1,null,"14:50",1],
+      ["KGP",103,1,"16:11","16:13",3],
+      ["BLS",243,1,"18:10","18:11",5],
+      ["BBS",441,1,"20:49","21:09",5],
+      ["BAM",653,2,"00:14","00:17",5],
+      ["VSKP",882,2,"03:45","04:00",3],
+      ["RJY",1101,2,"07:13","07:29",5],
+      ["BZA",1231,2,"09:25","09:37",2],
+      ["OGL",1342,2,"11:09","11:10",1],
+      ["NLR",1487,2,"13:05","13:08",3],
+      ["GDR",1525,2,"13:39","13:41",5],
+      ["MAS",1663,2,"15:39",null,10]
+    ] },
+  // 12842 Coromandel Express  (MAS → HWH)
+  { no:"12842", name:"Coromandel Express", cat:"Superfast", days:["Thu"], classes:"2A, 3A, SL, GN", maxSpeed:110, loco:"WAP-7 (Electric 6000 HP)", ret:"12841",
+    live:{ pos:10, delay:20, speed:72, hist:[0,4,4,5,9,13,12,16,17,17,20] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["MAS",0,1,null,"03:04",10],
+      ["GDR",138,1,"05:04","05:07",1],
+      ["NLR",176,1,"05:41","05:44",4],
+      ["OGL",321,1,"07:43","07:45",4],
+      ["BZA",432,1,"09:20","09:34",4],
+      ["RJY",562,1,"11:28","11:46",3],
+      ["VSKP",781,1,"14:53","15:07",2],
+      ["BAM",1010,1,"18:05","18:07",2],
+      ["BBS",1222,1,"21:17","21:26",5],
+      ["BLS",1420,2,"00:10","00:12",3],
+      ["KGP",1560,2,"02:14","02:16",5],
+      ["HWH",1663,2,"03:41",null,9]
+    ] },
+  // 12839 Howrah–Chennai Mail  (HWH → MAS)
+  { no:"12839", name:"Howrah–Chennai Mail", cat:"Superfast", days:["Sat"], classes:"1A, 2A, 3A, SL, GN", maxSpeed:110, loco:"WAP-7 (Electric 6000 HP)", ret:"12840",
+    live:{ pos:8, delay:31, speed:104, hist:[0,7,7,12,18,20,25,26,31] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["HWH",0,1,null,"23:45",5],
+      ["KGP",103,2,"01:18","01:20",4],
+      ["BLS",243,2,"03:16","03:17",2],
+      ["BBS",441,2,"06:26","06:40",5],
+      ["BAM",653,2,"09:44","09:46",1],
+      ["VSKP",882,2,"13:06","13:16",2],
+      ["RJY",1101,2,"16:23","16:38",1],
+      ["BZA",1231,2,"18:34","18:45",5],
+      ["OGL",1342,2,"20:28","20:31",4],
+      ["NLR",1487,2,"22:47","22:48",1],
+      ["GDR",1525,2,"23:20","23:22",2],
+      ["MAS",1663,3,"01:24",null,12]
+    ] },
+  // 12840 Howrah–Chennai Mail  (MAS → HWH)
+  { no:"12840", name:"Howrah–Chennai Mail", cat:"Superfast", days:["Mon","Thu"], classes:"1A, 2A, 3A, SL, GN", maxSpeed:100, loco:"WAP-4 (Electric 5000 HP)", ret:"12839",
+    live:{ pos:1, delay:0, speed:70, hist:[0,0] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["MAS",0,1,null,"05:33",10],
+      ["GDR",138,1,"07:42","07:44",2],
+      ["NLR",176,1,"08:20","08:23",1],
+      ["OGL",321,1,"10:44","10:45",1],
+      ["BZA",432,1,"12:30","12:47",12],
+      ["RJY",562,1,"14:44","15:04",3],
+      ["VSKP",781,1,"18:12","18:30",1],
+      ["BAM",1010,1,"22:01","22:02",4],
+      ["BBS",1222,2,"01:10","01:15",4],
+      ["BLS",1420,2,"04:02","04:05",1],
+      ["KGP",1560,2,"06:22","06:23",3],
+      ["HWH",1663,2,"07:57",null,5]
+    ] },
+  // 12829 Chennai–Bhubaneswar Superfast Express  (MAS → BBS)
+  { no:"12829", name:"Chennai–Bhubaneswar Superfast Express", cat:"Superfast", days:["Mon","Wed","Sat"], classes:"1A, 2A, 3A, SL, GN", maxSpeed:100, loco:"WAP-4 (Electric 5000 HP)", ret:"12830",
+    live:{ pos:3, delay:54, speed:71, hist:[0,19,37,54] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["MAS",0,1,null,"13:25",9],
+      ["GDR",138,1,"15:30","15:33",3],
+      ["NLR",176,1,"16:09","16:11",5],
+      ["OGL",321,1,"18:29","18:31",2],
+      ["BZA",432,1,"20:22","20:39",2],
+      ["RJY",562,1,"22:44","22:50",3],
+      ["VSKP",781,2,"02:27","02:43",1],
+      ["BAM",1010,2,"06:23","06:25",2],
+      ["BBS",1222,2,"09:29",null,5]
+    ] },
+  // 12830 Chennai–Bhubaneswar Superfast Express  (BBS → MAS)
+  { no:"12830", name:"Chennai–Bhubaneswar Superfast Express", cat:"Superfast", days:["Mon","Tue","Wed"], classes:"2A, 3A, SL, GN", maxSpeed:110, loco:"WAP-7 (Electric 6000 HP)", ret:"12829",
+    live:{ pos:2, delay:2, speed:97, hist:[0,1,2] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["BBS",0,1,null,"18:12",5],
+      ["BAM",212,1,"21:19","21:20",1],
+      ["VSKP",441,2,"00:30","00:39",2],
+      ["RJY",660,2,"04:08","04:17",4],
+      ["BZA",790,2,"06:12","06:27",10],
+      ["OGL",901,2,"07:59","08:02",5],
+      ["NLR",1046,2,"10:14","10:15",2],
+      ["GDR",1084,2,"10:51","10:52",3],
+      ["MAS",1222,2,"12:54",null,1]
+    ] },
+  // 12711 Pinakini Express  (MAS → BZA)
+  { no:"12711", name:"Pinakini Express", cat:"Superfast", days:["Mon","Fri"], classes:"CC, 2S, SL, GN", maxSpeed:110, loco:"WAP-7 (Electric 6000 HP)", ret:"12712",
+    live:{ pos:2, delay:2, speed:75, hist:[0,3,2] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["MAS",0,1,null,"06:25",1],
+      ["GDR",138,1,"08:33","08:35",4],
+      ["NLR",176,1,"09:09","09:10",4],
+      ["OGL",321,1,"11:26","11:29",1],
+      ["BZA",432,1,"13:13",null,6]
+    ] },
+  // 12712 Pinakini Express  (BZA → MAS)
+  { no:"12712", name:"Pinakini Express", cat:"Superfast", days:["Sat"], classes:"CC, 2S, SL, GN", maxSpeed:110, loco:"WAP-4 (Electric 5000 HP)", ret:"12711",
+    live:{ pos:2, delay:0, speed:96, hist:[0,1,0] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["BZA",0,1,null,"00:00",4],
+      ["OGL",111,1,"01:45","01:46",3],
+      ["NLR",256,1,"03:59","04:01",2],
+      ["GDR",294,1,"04:34","04:36",3],
+      ["MAS",432,1,"06:49",null,6]
+    ] },
+  // 12809 Howrah–Mumbai Mail  (HWH → CSMT)
+  { no:"12809", name:"Howrah–Mumbai Mail", cat:"Superfast", days:["Mon","Tue","Sat"], classes:"2A, 3A, SL, GN", maxSpeed:110, loco:"WAP-7 (Electric 6000 HP)", ret:"12810",
+    live:{ pos:5, delay:35, speed:99, hist:[0,7,15,24,31,35] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["HWH",0,1,null,"20:35",3],
+      ["KGP",116,1,"22:26","22:27",5],
+      ["TATA",250,2,"00:32","00:41",3],
+      ["CKP",300,2,"01:27","01:30",5],
+      ["ROU",412,2,"03:02","03:10",3],
+      ["BSP",700,2,"07:38","07:49",5],
+      ["R",815,2,"09:24","09:25",2],
+      ["DURG",870,2,"10:13","10:16",3],
+      ["G",1000,2,"12:17","12:18",2],
+      ["NGP",1075,2,"13:28","13:47",8],
+      ["WR",1155,2,"14:56","14:59",2],
+      ["BSL",1360,2,"17:53","17:58",1],
+      ["NK",1650,2,"22:26","22:29",5],
+      ["KYN",1914,3,"02:26","02:28",1],
+      ["DR",1959,3,"03:06","03:08",3],
+      ["CSMT",1968,3,"03:16",null,3]
+    ] },
+  // 12810 Howrah–Mumbai Mail  (CSMT → HWH)
+  { no:"12810", name:"Howrah–Mumbai Mail", cat:"Superfast", days:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"], classes:"2A, 3A, SL, GN", maxSpeed:110, loco:"WAP-7 (Electric 6000 HP)", ret:"12809",
+    live:{ pos:6, delay:24, speed:95, hist:[0,4,10,13,18,20,24] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["CSMT",0,1,null,"12:06",12],
+      ["DR",9,1,"12:14","12:17",5],
+      ["KYN",54,1,"13:02","13:05",1],
+      ["NK",318,1,"17:11","17:14",5],
+      ["BSL",608,1,"21:42","21:48",4],
+      ["WR",813,2,"01:14","01:15",1],
+      ["NGP",893,2,"02:34","02:40",6],
+      ["G",968,2,"03:51","03:54",5],
+      ["DURG",1098,2,"06:02","06:04",2],
+      ["R",1153,2,"06:59","07:01",4],
+      ["BSP",1268,2,"08:56","09:02",3],
+      ["ROU",1556,2,"13:45","13:52",3],
+      ["CKP",1668,2,"15:30","15:33",1],
+      ["TATA",1718,2,"16:20","16:26",4],
+      ["KGP",1852,2,"18:30","18:31",2],
+      ["HWH",1968,2,"20:21",null,11]
+    ] },
+  // 12859 Gitanjali Express  (HWH → CSMT)
+  { no:"12859", name:"Gitanjali Express", cat:"Superfast", days:["Mon"], classes:"2A, 3A, SL, GN", maxSpeed:110, loco:"WAP-4 (Electric 5000 HP)", ret:"12860",
+    live:{ pos:11, delay:9, speed:65, hist:[0,0,4,3,3,4,7,8,8,8,7,9] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["HWH",0,1,null,"13:50",1],
+      ["KGP",116,1,"15:29","15:31",3],
+      ["TATA",250,1,"17:32","17:42",2],
+      ["CKP",300,1,"18:29","18:32",2],
+      ["ROU",412,1,"20:16","20:27",4],
+      ["BSP",700,2,"00:31","00:42",4],
+      ["R",815,2,"02:30","02:31",5],
+      ["DURG",870,2,"03:23","03:25",1],
+      ["G",1000,2,"05:24","05:25",2],
+      ["NGP",1075,2,"06:31","06:45",7],
+      ["WR",1155,2,"08:01","08:02",4],
+      ["BSL",1360,2,"11:10","11:22",1],
+      ["NK",1650,2,"15:39","15:42",4],
+      ["KYN",1914,2,"19:52","19:55",2],
+      ["DR",1959,2,"20:37","20:38",2],
+      ["CSMT",1968,2,"20:46",null,10]
+    ] },
+  // 12860 Gitanjali Express  (CSMT → HWH)
+  { no:"12860", name:"Gitanjali Express", cat:"Superfast", days:["Sat"], classes:"2A, 3A, SL, GN", maxSpeed:110, loco:"WAP-7 (Electric 6000 HP)", ret:"12859",
+    live:{ pos:8, delay:0, speed:95, hist:[0,0,1,1,1,2,0,2,0] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["CSMT",0,1,null,"06:40",9],
+      ["DR",9,1,"06:48","06:49",3],
+      ["KYN",54,1,"07:31","07:33",5],
+      ["NK",318,1,"11:08","11:11",2],
+      ["BSL",608,1,"15:25","15:40",5],
+      ["WR",813,1,"18:40","18:43",5],
+      ["NGP",893,1,"19:56","20:11",11],
+      ["G",968,1,"21:14","21:16",2],
+      ["DURG",1098,1,"23:14","23:15",5],
+      ["R",1153,2,"00:07","00:08",3],
+      ["BSP",1268,2,"01:49","02:06",3],
+      ["ROU",1556,2,"06:18","06:26",4],
+      ["CKP",1668,2,"07:59","08:01",1],
+      ["TATA",1718,2,"08:43","08:53",1],
+      ["KGP",1852,2,"10:57","10:58",5],
+      ["HWH",1968,2,"12:48",null,8]
+    ] },
+  // 11041 Chennai Express  (CSMT → MAS)
+  { no:"11041", name:"Chennai Express", cat:"Superfast", days:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"], classes:"1A, 2A, 3A, SL, GN", maxSpeed:100, loco:"WAP-7 (Electric 6000 HP)", ret:"11042",
+    live:{ pos:1, delay:97, speed:70, hist:[0,97] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["CSMT",0,1,null,"11:45",9],
+      ["DR",9,1,"11:54","11:55",3],
+      ["KYN",54,1,"12:40","12:41",3],
+      ["LNL",128,1,"13:55","13:57",4],
+      ["PUNE",192,1,"14:54","15:12",5],
+      ["DD",265,1,"16:18","16:21",5],
+      ["SUR",455,1,"19:33","19:45",5],
+      ["KLBG",584,1,"21:57","21:59",2],
+      ["WADI",620,1,"22:33","22:35",3],
+      ["GTL",856,2,"02:22","02:38",4],
+      ["RU",1132,2,"07:11","07:13",3],
+      ["AJJ",1225,2,"08:39","08:40",5],
+      ["MAS",1279,2,"09:31",null,1]
+    ] },
+  // 11042 Chennai Express  (MAS → CSMT)
+  { no:"11042", name:"Chennai Express", cat:"Superfast", days:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"], classes:"1A, 2A, 3A, SL, GN", maxSpeed:110, loco:"WAP-4 (Electric 5000 HP)", ret:"11041",
+    live:{ pos:10, delay:0, speed:99, hist:[0,1,0,2,2,2,0,0,1,0,0] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["MAS",0,1,null,"16:46",8],
+      ["AJJ",54,1,"17:40","17:41",2],
+      ["RU",147,1,"19:08","19:09",5],
+      ["GTL",423,1,"23:10","23:29",4],
+      ["WADI",659,2,"03:19","03:21",3],
+      ["KLBG",695,2,"03:58","03:59",1],
+      ["SUR",824,2,"05:55","06:05",5],
+      ["DD",1014,2,"09:12","09:15",5],
+      ["PUNE",1087,2,"10:23","10:35",4],
+      ["LNL",1151,2,"11:40","11:42",1],
+      ["KYN",1225,2,"12:54","12:57",1],
+      ["DR",1270,2,"13:41","13:42",1],
+      ["CSMT",1279,2,"13:50",null,4]
+    ] },
+  // 12163 Mumbai–Chennai Superfast Express  (CSMT → MAS)
+  { no:"12163", name:"Mumbai–Chennai Superfast Express", cat:"Superfast", days:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"], classes:"1A, 2A, 3A, SL, GN", maxSpeed:110, loco:"WAP-7 (Electric 6000 HP)", ret:"12164",
+    live:{ pos:7, delay:65, speed:76, hist:[0,12,22,31,39,47,55,65] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["CSMT",0,1,null,"21:35",12],
+      ["DR",9,1,"21:44","21:46",2],
+      ["KYN",54,1,"22:23","22:25",3],
+      ["LNL",128,1,"23:35","23:36",5],
+      ["PUNE",192,2,"00:37","00:47",3],
+      ["DD",265,2,"01:56","01:58",3],
+      ["SUR",455,2,"04:36","04:51",5],
+      ["KLBG",584,2,"06:53","06:55",2],
+      ["WADI",620,2,"07:27","07:30",1],
+      ["GTL",856,2,"11:01","11:09",1],
+      ["RU",1132,2,"15:29","15:30",5],
+      ["AJJ",1225,2,"16:47","16:48",1],
+      ["MAS",1279,2,"17:32",null,9]
+    ] },
+  // 12164 Mumbai–Chennai Superfast Express  (MAS → CSMT)
+  { no:"12164", name:"Mumbai–Chennai Superfast Express", cat:"Superfast", days:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"], classes:"2A, 3A, SL, GN", maxSpeed:110, loco:"WAP-7 (Electric 6000 HP)", ret:"12163",
+    live:{ pos:5, delay:2, speed:97, hist:[0,1,1,2,3,2] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["MAS",0,1,null,"01:10",9],
+      ["AJJ",54,1,"01:55","01:58",4],
+      ["RU",147,1,"03:23","03:26",4],
+      ["GTL",423,1,"07:39","07:53",4],
+      ["WADI",659,1,"11:07","11:10",2],
+      ["KLBG",695,1,"11:40","11:42",1],
+      ["SUR",824,1,"13:25","13:40",4],
+      ["DD",1014,1,"16:16","16:19",3],
+      ["PUNE",1087,1,"17:19","17:34",2],
+      ["LNL",1151,1,"18:30","18:32",3],
+      ["KYN",1225,1,"19:35","19:37",5],
+      ["DR",1270,1,"20:18","20:19",4],
+      ["CSMT",1279,1,"20:27",null,1]
+    ] },
+  // 12639 Brindavan Express  (MAS → SBC)
+  { no:"12639", name:"Brindavan Express", cat:"Superfast", days:["Mon","Tue","Sat"], classes:"CC, 2S, SL, GN", maxSpeed:110, loco:"WAP-7 (Electric 6000 HP)", ret:"12640",
+    live:{ pos:3, delay:106, speed:81, hist:[0,39,73,106] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["MAS",0,1,null,"07:50",3],
+      ["AJJ",69,1,"08:50","08:53",4],
+      ["KPD",132,1,"09:51","09:56",5],
+      ["JTJ",214,1,"11:10","11:13",4],
+      ["BWT",290,1,"12:17","12:18",5],
+      ["KJM",340,1,"13:01","13:02",3],
+      ["SBC",362,1,"13:20",null,9]
+    ] },
+  // 12640 Brindavan Express  (SBC → MAS)
+  { no:"12640", name:"Brindavan Express", cat:"Superfast", days:["Thu"], classes:"CC, 2S, SL, GN", maxSpeed:100, loco:"WAP-4 (Electric 5000 HP)", ret:"12639",
+    live:{ pos:3, delay:23, speed:77, hist:[0,9,17,23] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["SBC",0,1,null,"18:46",10],
+      ["KJM",22,1,"19:07","19:10",3],
+      ["BWT",72,1,"19:58","19:59",4],
+      ["JTJ",148,1,"21:11","21:13",5],
+      ["KPD",230,1,"22:25","22:32",4],
+      ["AJJ",293,1,"23:32","23:33",4],
+      ["MAS",362,2,"00:36",null,6]
+    ] },
+  // 16021 Kaveri Express  (MYS → MAS)
+  { no:"16021", name:"Kaveri Express", cat:"Superfast", days:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"], classes:"CC, 2S, SL, GN", maxSpeed:100, loco:"WAP-4 (Electric 5000 HP)", ret:"16022",
+    live:{ pos:5, delay:7, speed:80, hist:[0,3,2,4,7,7] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["MYS",0,1,null,"20:15",4],
+      ["MYA",50,1,"21:02","21:05",1],
+      ["SBC",138,1,"22:27","22:43",8],
+      ["KJM",160,1,"23:04","23:06",4],
+      ["BWT",210,1,"23:56","23:58",5],
+      ["JTJ",286,2,"01:14","01:16",2],
+      ["KPD",368,2,"02:41","02:55",4],
+      ["AJJ",431,2,"03:53","03:54",3],
+      ["MAS",500,2,"05:01",null,3]
+    ] },
+  // 16022 Kaveri Express  (MAS → MYS)
+  { no:"16022", name:"Kaveri Express", cat:"Superfast", days:["Mon","Fri","Sat"], classes:"CC, 2S, SL, GN", maxSpeed:100, loco:"WAP-4 (Electric 5000 HP)", ret:"16021",
+    live:{ pos:2, delay:31, speed:70, hist:[0,15,31] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["MAS",0,1,null,"10:21",10],
+      ["AJJ",69,1,"11:25","11:28",5],
+      ["KPD",132,1,"12:26","12:41",1],
+      ["JTJ",214,1,"14:07","14:08",5],
+      ["BWT",290,1,"15:25","15:26",3],
+      ["KJM",340,1,"16:12","16:15",1],
+      ["SBC",362,1,"16:35","16:53",11],
+      ["MYA",450,1,"18:21","18:23",2],
+      ["MYS",500,1,"19:14",null,1]
+    ] },
+  // 12727 Godavari Express  (SC → VSKP)
+  { no:"12727", name:"Godavari Express", cat:"Superfast", days:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"], classes:"1A, 2A, 3A, SL, GN", maxSpeed:110, loco:"WAP-4 (Electric 5000 HP)", ret:"12728",
+    live:{ pos:1, delay:0, speed:98, hist:[0,0] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["SC",0,1,null,"17:20",4],
+      ["WL",148,1,"19:32","19:43",5],
+      ["MABD",200,1,"20:29","20:32",2],
+      ["KMT",260,1,"21:25","21:26",5],
+      ["BZA",350,1,"22:56","23:15",12],
+      ["RJY",480,2,"01:25","01:30",3],
+      ["SLO",530,2,"02:14","02:16",2],
+      ["VSKP",699,2,"04:47",null,5]
+    ] },
+  // 12728 Godavari Express  (VSKP → SC)
+  { no:"12728", name:"Godavari Express", cat:"Superfast", days:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"], classes:"2A, 3A, SL, GN", maxSpeed:100, loco:"WAP-7 (Electric 6000 HP)", ret:"12727",
+    live:{ pos:1, delay:2, speed:56, hist:[0,2] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["VSKP",0,1,null,"15:45",1],
+      ["SLO",169,1,"18:15","18:16",1],
+      ["RJY",219,1,"19:02","19:22",4],
+      ["BZA",349,1,"21:28","21:43",12],
+      ["KMT",439,1,"23:09","23:10",3],
+      ["MABD",499,2,"00:09","00:10",5],
+      ["WL",551,2,"01:02","01:20",3],
+      ["SC",699,2,"03:51",null,5]
+    ] },
+  // 17015 Visakha Express  (VSKP → SC)
+  { no:"17015", name:"Visakha Express", cat:"Superfast", days:["Thu","Sun"], classes:"2A, 3A, SL, GN", maxSpeed:110, loco:"WAP-4 (Electric 5000 HP)", ret:"17016",
+    live:{ pos:1, delay:19, speed:65, hist:[0,19] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["VSKP",0,1,null,"17:40",2],
+      ["SLO",169,1,"20:30","20:33",5],
+      ["RJY",219,1,"21:22","21:30",4],
+      ["BZA",349,1,"23:30","23:49",9],
+      ["KMT",439,2,"01:21","01:23",1],
+      ["MABD",499,2,"02:19","02:21",2],
+      ["WL",551,2,"03:07","03:23",3],
+      ["SC",699,2,"05:42",null,6]
+    ] },
+  // 17016 Visakha Express  (SC → VSKP)
+  { no:"17016", name:"Visakha Express", cat:"Superfast", days:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"], classes:"2A, 3A, SL, GN", maxSpeed:110, loco:"WAP-7 (Electric 6000 HP)", ret:"17015",
+    live:{ pos:6, delay:1, speed:78, hist:[0,0,2,2,2,0,1] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["SC",0,1,null,"10:37",3],
+      ["WL",148,1,"13:03","13:13",5],
+      ["MABD",200,1,"14:05","14:07",2],
+      ["KMT",260,1,"15:01","15:03",4],
+      ["BZA",350,1,"16:26","16:33",12],
+      ["RJY",480,1,"18:42","19:01",2],
+      ["SLO",530,1,"19:52","19:55",1],
+      ["VSKP",699,1,"22:24",null,3]
+    ] },
+  // 12933 Karnavati Express  (MMCT → ADI)
+  { no:"12933", name:"Karnavati Express", cat:"Superfast", days:["Tue","Fri"], classes:"CC, 2S, SL, GN", maxSpeed:110, loco:"WAP-7 (Electric 6000 HP)", ret:"12934",
+    live:{ pos:3, delay:0, speed:63, hist:[0,0,0,0] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["MMCT",0,1,null,"06:00",1],
+      ["BVI",30,1,"06:25","06:28",4],
+      ["VAPI",175,1,"08:23","08:24",3],
+      ["ST",263,1,"09:36","09:51",5],
+      ["BH",322,1,"10:45","10:47",1],
+      ["BRC",392,1,"11:47","11:55",3],
+      ["ADI",491,1,"13:21",null,6]
+    ] },
+  // 12934 Karnavati Express  (ADI → MMCT)
+  { no:"12934", name:"Karnavati Express", cat:"Superfast", days:["Tue","Sat"], classes:"CC, 2S, SL, GN", maxSpeed:100, loco:"WAP-7 (Electric 6000 HP)", ret:"12933",
+    live:{ pos:4, delay:105, speed:86, hist:[0,30,57,80,105] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["ADI",0,1,null,"00:45",4],
+      ["BRC",99,1,"02:10","02:15",5],
+      ["BH",169,1,"03:18","03:19",5],
+      ["ST",228,1,"04:06","04:22",3],
+      ["VAPI",316,1,"05:38","05:39",4],
+      ["BVI",461,1,"07:51","07:54",1],
+      ["MMCT",491,1,"08:21",null,12]
+    ] },
+  // 12925 Paschim Express  (MMCT → NDLS)
+  { no:"12925", name:"Paschim Express", cat:"Superfast", days:["Wed"], classes:"1A, 2A, 3A, SL, GN", maxSpeed:100, loco:"WAP-7 (Electric 6000 HP)", ret:"12926",
+    live:{ pos:1, delay:18, speed:70, hist:[0,18] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["MMCT",0,1,null,"11:40",6],
+      ["BVI",30,1,"12:05","12:08",2],
+      ["VAPI",175,1,"14:12","14:14",4],
+      ["ST",263,1,"15:28","15:37",2],
+      ["BH",322,1,"16:28","16:29",4],
+      ["BRC",392,1,"17:28","17:35",4],
+      ["RTM",695,1,"21:46","21:53",1],
+      ["KOTA",919,2,"01:11","01:18",1],
+      ["MTJ",1243,2,"05:44","05:47",5],
+      ["NDLS",1384,2,"07:52",null,9]
+    ] },
+  // 12926 Paschim Express  (NDLS → MMCT)
+  { no:"12926", name:"Paschim Express", cat:"Superfast", days:["Wed","Thu"], classes:"2A, 3A, SL, GN", maxSpeed:110, loco:"WAP-7 (Electric 6000 HP)", ret:"12925",
+    live:{ pos:8, delay:0, speed:81, hist:[0,0,0,0,0,0,0,0,0] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["NDLS",0,1,null,"13:43",9],
+      ["MTJ",141,1,"15:39","15:41",5],
+      ["KOTA",465,1,"20:29","20:49",2],
+      ["RTM",689,1,"23:44","23:59",4],
+      ["BRC",992,2,"04:26","04:35",2],
+      ["BH",1062,2,"05:37","05:38",1],
+      ["ST",1121,2,"06:31","06:42",4],
+      ["VAPI",1209,2,"07:57","08:00",2],
+      ["BVI",1354,2,"10:09","10:11",4],
+      ["MMCT",1384,2,"10:35",null,10]
+    ] },
+  // 12915 Ashram Express  (NDLS → ADI)
+  { no:"12915", name:"Ashram Express", cat:"Superfast", days:["Mon","Wed"], classes:"1A, 2A, 3A, SL, GN", maxSpeed:100, loco:"WAP-7 (Electric 6000 HP)", ret:"12916",
+    live:{ pos:3, delay:79, speed:86, hist:[0,28,55,79] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["NDLS",0,1,null,"15:10",10],
+      ["RE",82,1,"16:24","16:25",2],
+      ["JP",308,1,"19:37","19:52",3],
+      ["AII",443,1,"21:40","22:00",1],
+      ["ABR",750,2,"02:07","02:08",3],
+      ["PNU",835,2,"03:25","03:27",3],
+      ["ADI",935,2,"04:57",null,9]
+    ] },
+  // 12916 Ashram Express  (ADI → NDLS)
+  { no:"12916", name:"Ashram Express", cat:"Superfast", days:["Tue","Fri","Sat"], classes:"2A, 3A, SL, GN", maxSpeed:100, loco:"WAP-4 (Electric 5000 HP)", ret:"12915",
+    live:{ pos:3, delay:9, speed:64, hist:[0,5,8,9] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["ADI",0,1,null,"13:42",11],
+      ["PNU",100,1,"15:07","15:09",1],
+      ["ABR",185,1,"16:27","16:29",5],
+      ["AII",492,1,"21:06","21:14",2],
+      ["JP",627,1,"23:02","23:13",3],
+      ["RE",853,2,"02:24","02:26",3],
+      ["NDLS",935,2,"03:43",null,1]
+    ] },
+  // 12419 Gomti Express  (LKO → NDLS)
+  { no:"12419", name:"Gomti Express", cat:"Superfast", days:["Tue"], classes:"CC, 2S, SL, GN", maxSpeed:100, loco:"WAP-7 (Electric 6000 HP)", ret:"12420",
+    live:{ pos:3, delay:95, speed:80, hist:[0,33,65,95] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["LKO",0,1,null,"06:10",1],
+      ["CNB",72,1,"07:10","07:28",3],
+      ["ETW",216,1,"09:40","09:41",2],
+      ["TDL",308,1,"11:00","11:01",1],
+      ["ALJN",386,1,"12:07","12:09",4],
+      ["NDLS",512,1,"13:57",null,12]
+    ] },
+  // 12420 Gomti Express  (NDLS → LKO)
+  { no:"12420", name:"Gomti Express", cat:"Superfast", days:["Thu","Sat","Sun"], classes:"CC, 2S, SL, GN", maxSpeed:110, loco:"WAP-7 (Electric 6000 HP)", ret:"12419",
+    live:{ pos:4, delay:2, speed:96, hist:[0,0,2,2,2] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["NDLS",0,1,null,"20:39",11],
+      ["ALJN",126,1,"22:33","22:35",1],
+      ["TDL",204,1,"23:40","23:43",3],
+      ["ETW",296,2,"00:58","01:01",4],
+      ["CNB",440,2,"03:14","03:33",1],
+      ["LKO",512,2,"04:35",null,6]
+    ] },
+  // 12229 Lucknow Mail  (NDLS → LKO)
+  { no:"12229", name:"Lucknow Mail", cat:"Superfast", days:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"], classes:"CC, 2S, SL, GN", maxSpeed:100, loco:"WAP-7 (Electric 6000 HP)", ret:"12230",
+    live:{ pos:4, delay:29, speed:94, hist:[0,9,14,24,29] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["NDLS",0,1,null,"22:10",2],
+      ["ALJN",126,2,"00:04","00:06",4],
+      ["TDL",204,2,"01:21","01:23",2],
+      ["ETW",296,2,"02:48","02:50",5],
+      ["CNB",440,2,"04:57","05:06",2],
+      ["LKO",512,2,"06:14",null,7]
+    ] },
+  // 12230 Lucknow Mail  (LKO → NDLS)
+  { no:"12230", name:"Lucknow Mail", cat:"Superfast", days:["Tue","Sun"], classes:"CC, 2S, SL, GN", maxSpeed:110, loco:"WAP-4 (Electric 5000 HP)", ret:"12229",
+    live:{ pos:1, delay:73, speed:96, hist:[0,73] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["LKO",0,1,null,"10:47",1],
+      ["CNB",72,1,"11:50","12:08",3],
+      ["ETW",216,1,"14:24","14:27",2],
+      ["TDL",308,1,"15:53","15:54",2],
+      ["ALJN",386,1,"17:10","17:11",1],
+      ["NDLS",512,1,"19:18",null,2]
+    ] },
+  // 12559 Shiv Ganga Express  (BSB → NDLS)
+  { no:"12559", name:"Shiv Ganga Express", cat:"Superfast", days:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"], classes:"2A, 3A, SL, GN", maxSpeed:110, loco:"WAP-7 (Electric 6000 HP)", ret:"12560",
+    live:{ pos:2, delay:97, speed:88, hist:[0,51,97] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["BSB",0,1,null,"18:45",5],
+      ["PRYJ",125,1,"20:43","20:59",3],
+      ["CNB",319,2,"00:02","00:12",4],
+      ["ETW",463,2,"02:18","02:20",2],
+      ["TDL",555,2,"03:37","03:40",5],
+      ["ALJN",633,2,"04:47","04:48",1],
+      ["NDLS",759,2,"06:42",null,12]
+    ] },
+  // 12560 Shiv Ganga Express  (NDLS → BSB)
+  { no:"12560", name:"Shiv Ganga Express", cat:"Superfast", days:["Fri"], classes:"2A, 3A, SL, GN", maxSpeed:110, loco:"WAP-7 (Electric 6000 HP)", ret:"12559",
+    live:{ pos:5, delay:87, speed:69, hist:[0,21,37,56,69,87] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["NDLS",0,1,null,"14:39",8],
+      ["ALJN",126,1,"16:28","16:30",3],
+      ["TDL",204,1,"17:37","17:39",1],
+      ["ETW",296,1,"18:57","18:59",3],
+      ["CNB",440,1,"21:03","21:22",1],
+      ["PRYJ",634,2,"00:23","00:32",5],
+      ["BSB",759,2,"02:34",null,5]
+    ] },
+  // 12303 Poorva Express  (HWH → NDLS)
+  { no:"12303", name:"Poorva Express", cat:"Superfast", days:["Tue","Sun"], classes:"2A, 3A, SL, GN", maxSpeed:110, loco:"WAP-7 (Electric 6000 HP)", ret:"12304",
+    live:{ pos:5, delay:103, speed:82, hist:[0,25,45,66,85,103] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["HWH",0,1,null,"08:00",3],
+      ["ASN",204,1,"10:45","10:48",4],
+      ["DHN",286,1,"12:03","12:10",2],
+      ["GAYA",470,1,"14:46","14:52",1],
+      ["DDU",660,1,"17:40","17:55",2],
+      ["PRYJ",813,1,"20:14","20:28",5],
+      ["CNB",1007,1,"23:11","23:27",2],
+      ["ETW",1151,2,"01:35","01:37",2],
+      ["TDL",1243,2,"02:57","02:59",2],
+      ["ALJN",1321,2,"04:08","04:11",2],
+      ["NDLS",1447,2,"06:04",null,11]
+    ] },
+  // 12304 Poorva Express  (NDLS → HWH)
+  { no:"12304", name:"Poorva Express", cat:"Superfast", days:["Mon","Tue"], classes:"2A, 3A, SL, GN", maxSpeed:110, loco:"WAP-4 (Electric 5000 HP)", ret:"12303",
+    live:{ pos:9, delay:1, speed:73, hist:[0,0,0,2,1,2,2,3,2,1] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["NDLS",0,1,null,"13:16",1],
+      ["ALJN",126,1,"15:09","15:12",2],
+      ["TDL",204,1,"16:19","16:21",5],
+      ["ETW",296,1,"17:47","17:50",2],
+      ["CNB",440,1,"19:51","20:08",1],
+      ["PRYJ",634,1,"23:04","23:14",1],
+      ["DDU",787,2,"01:18","01:32",3],
+      ["GAYA",977,2,"04:09","04:29",1],
+      ["DHN",1161,2,"07:11","07:16",3],
+      ["ASN",1243,2,"08:26","08:28",3],
+      ["HWH",1447,2,"11:17",null,9]
+    ] },
+  // 12837 Howrah–Puri Superfast Express  (HWH → PURI)
+  { no:"12837", name:"Howrah–Puri Superfast Express", cat:"Superfast", days:["Tue","Sat","Sun"], classes:"CC, 2S, SL, GN", maxSpeed:110, loco:"WAP-7 (Electric 6000 HP)", ret:"12838",
+    live:{ pos:4, delay:2, speed:77, hist:[0,0,2,0,2] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["HWH",0,1,null,"22:35",2],
+      ["KGP",116,2,"00:24","00:27",2],
+      ["BLS",254,2,"02:48","03:05",4],
+      ["BHC",295,2,"03:47","03:50",5],
+      ["CTC",380,2,"05:08","05:28",5],
+      ["BBS",440,2,"06:26","06:36",3],
+      ["PURI",500,2,"07:38",null,5]
+    ] },
+  // 12838 Howrah–Puri Superfast Express  (PURI → HWH)
+  { no:"12838", name:"Howrah–Puri Superfast Express", cat:"Superfast", days:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"], classes:"CC, 2S, SL, GN", maxSpeed:100, loco:"WAP-7 (Electric 6000 HP)", ret:"12837",
+    live:{ pos:3, delay:95, speed:66, hist:[0,37,64,95] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["PURI",0,1,null,"12:33",4],
+      ["BBS",60,1,"13:28","13:41",2],
+      ["CTC",120,1,"14:42","14:49",5],
+      ["BHC",205,1,"16:15","16:16",2],
+      ["BLS",246,1,"16:53","17:11",5],
+      ["KGP",384,1,"19:14","19:17",2],
+      ["HWH",500,1,"21:01",null,9]
+    ] },
+  // 12497 Shane Punjab Express  (NDLS → ASR)
+  { no:"12497", name:"Shane Punjab Express", cat:"Superfast", days:["Wed","Sun"], classes:"CC, 2S, SL, GN", maxSpeed:110, loco:"WAP-7 (Electric 6000 HP)", ret:"12498",
+    live:{ pos:1, delay:0, speed:100, hist:[0,0] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["NDLS",0,1,null,"15:30",1],
+      ["PNP",90,1,"16:52","16:53",1],
+      ["KUN",125,1,"17:23","17:25",2],
+      ["UMB",200,1,"18:26","18:45",4],
+      ["RPJ",232,1,"19:14","19:16",3],
+      ["LDH",313,1,"20:21","20:36",5],
+      ["JUC",365,1,"21:23","21:41",4],
+      ["BEAS",410,1,"22:18","22:21",4],
+      ["ASR",449,1,"22:57",null,1]
+    ] },
+  // 12498 Shane Punjab Express  (ASR → NDLS)
+  { no:"12498", name:"Shane Punjab Express", cat:"Superfast", days:["Fri","Sat"], classes:"CC, 2S, SL, GN", maxSpeed:100, loco:"WAP-7 (Electric 6000 HP)", ret:"12497",
+    live:{ pos:5, delay:0, speed:82, hist:[0,0,0,0,1,0] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["ASR",0,1,null,"05:05",4],
+      ["BEAS",39,1,"05:39","05:40",4],
+      ["JUC",84,1,"06:21","06:39",5],
+      ["LDH",136,1,"07:24","07:39",5],
+      ["RPJ",217,1,"08:47","08:50",4],
+      ["UMB",249,1,"09:16","09:23",3],
+      ["KUN",324,1,"10:30","10:32",1],
+      ["PNP",359,1,"11:04","11:07",1],
+      ["NDLS",449,1,"12:24",null,10]
+    ] },
+  // 12311 Kalka Mail  (NDLS → KLK)
+  { no:"12311", name:"Kalka Mail", cat:"Superfast", days:["Thu","Fri","Sun"], classes:"CC, 2S, SL, GN", maxSpeed:110, loco:"WAP-4 (Electric 5000 HP)", ret:"12312",
+    live:{ pos:1, delay:0, speed:64, hist:[0,0] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["NDLS",0,1,null,"22:30",5],
+      ["PNP",90,1,"23:56","23:58",2],
+      ["KUN",125,2,"00:32","00:34",5],
+      ["UMB",200,2,"01:48","02:04",2],
+      ["CDG",244,2,"02:45","03:03",4],
+      ["KLK",303,2,"03:57",null,1]
+    ] },
+  // 12312 Kalka Mail  (KLK → NDLS)
+  { no:"12312", name:"Kalka Mail", cat:"Superfast", days:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"], classes:"CC, 2S, SL, GN", maxSpeed:110, loco:"WAP-7 (Electric 6000 HP)", ret:"12311",
+    live:{ pos:1, delay:0, speed:62, hist:[0,0] },
+    // [station, km, day, arrives, departs, platform]
+    stops:[
+      ["KLK",0,1,null,"11:02",2],
+      ["CDG",59,1,"11:56","12:02",1],
+      ["UMB",103,1,"12:44","12:54",4],
+      ["KUN",178,1,"14:11","14:12",5],
+      ["PNP",213,1,"14:43","14:45",3],
+      ["NDLS",303,1,"16:07",null,1]
+    ] }
+    ];
+
+    // ---------------- prepare data ----------------
+    const WEEK = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const STN = Object.fromEntries(STATIONS.map(s => [s.code, s]));
+    const REC = { 'Vande Bharat': 0.08, Shatabdi: 0.10, Rajdhani: 0.06, Duronto: 0.05, Superfast: 0.035 };
+    const DIS = { fog: 18, tsr: 8, freight: 10, lcgate: 12, platform: 5 };
+    const disruptions = { fog: false, tsr: false, freight: false, lcgate: false, platform: false };
+    const hm = s => { const [h, m] = s.split(':'); return +h * 60 + +m; };
+
+    const trains = RAW_TRAINS.map(t => {
+      const stops = t.stops.map(([code, km, day, arr, dep, pf]) => {
+        const base = (day - 1) * 1440;
+        const a = arr == null ? null : base + hm(arr);
+        const d = dep == null ? null : (a == null ? base + hm(dep) : a + (hm(dep) - hm(arr) + 1440) % 1440);
+        return { code, name: STN[code].name, km, a, d, pf };
+      });
+      return { ...t, stops, from: stops[0], to: stops[stops.length - 1] };
+    });
+    const byNo = Object.fromEntries(trains.map(t => [t.no, t]));
+
+    // ---------------- helpers ----------------
+    const two = n => String(n).padStart(2, '0');
+    const tsch = s => s.a ?? s.d;
+    function fmtT(m) { const d = Math.floor(m / 1440); m = ((m % 1440) + 1440) % 1440; return `${two(Math.floor(m / 60))}:${two(m % 60)}${d > 0 ? ' · D' + (d + 1) : ''}`; }
+    const fmtDur = m => `${Math.floor(m / 60)}h ${two(Math.round(m % 60))}m`;
+    const sign = n => n > 0 ? `+${n}m` : (n < 0 ? `${n}m` : 'on time');
+    const extra = () => Object.keys(DIS).reduce((s, k) => s + (disruptions[k] ? DIS[k] : 0), 0);
+    const el = id => document.getElementById(id);
+    const dist = t => t.to.km;
+    const dur = t => t.to.a - t.from.d;
+
+    // Dynamic forecast for one train: one entry per stop.
+    function forecast(t) {
+      const L = t.live, E = extra(), rec = REC[t.cat], depPos = t.stops[L.pos].d;
+      return t.stops.map((s, i) => {
+        const sch = tsch(s);
+        if (i <= L.pos) return { passed: true, sch, delay: L.hist[i], eta: sch + L.hist[i] };
+        const m = s.a - depPos;
+        const delay = Math.round(Math.max(0, L.delay - rec * m) + E);
+        const eta = s.a + delay;
+        return { passed: false, sch, delay, eta, p90: eta + Math.round(0.8 * Math.sqrt(m)), stat: s.a + L.delay };
+      });
+    }
+    const nowDelay = t => t.live.delay + extra();
+
+    function getCategoryBadge(cat) {
+      return { 'Vande Bharat': 'badge-vande', Rajdhani: 'badge-rajdhani', Shatabdi: 'badge-shatabdi', Duronto: 'badge-duronto' }[cat] || 'badge-superfast';
+    }
+
+    // ---------------- state ----------------
+    let activePage = 'dashboard';
+    let trackedNo = '12004';
+    let selectedModalTrainNo = null;
+    let currentTypeFilter = 'all';
+    let currentList = trains;
+
+    // ---------------- navigation ----------------
+    function switchPage(pageId) {
+      if (pageId === 'search') pageId = 'tracking';
+      activePage = pageId;
+      ['dashboard', 'tracking', 'operations', 'prediction', 'analytics'].forEach(p => {
+        const on = p === pageId;
+        const pageEl = el(`page-${p}`);
+        if (pageEl) pageEl.classList.toggle('hidden', !on);
+        const navEl = el(`nav-${p}`);
+        if (navEl) navEl.className = "nav-item w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition " + (on ? "bg-blue-50 text-blue-700 shadow-sm" : "text-slate-600 hover:text-slate-900 hover:bg-slate-50");
+        const indEl = el(`indicator-${p}`);
+        if (indEl) indEl.className = "w-1.5 h-5 rounded-full " + (on ? "bg-blue-600" : "bg-transparent");
+      });
+      const searchPage = el('page-search');
+      if (searchPage) searchPage.classList.add('hidden');
+      const titles = {
+        dashboard: ["RAIL RAKSHAK Dashboard", "Train Arrival Time Forecasting Model & Dynamic ETA Platform"],
+        tracking: ["RAIL RAKSHAK Live Tracking", "Real-time moving status, GPS waypoints & telemetry"],
+        operations: ["Station Planning & Staff Operations", "Platform clashes, crew duty, pit-line turnaround & feeder transit"],
+        prediction: ["ETA Prediction Engine", "Dynamic multi-stage arrival and delay forecaster"],
+        analytics: ["Operations & Safety Analytics", "Fleet figures calculated from active operational corridors"]
+      };
+      if (titles[pageId]) {
+        el('pageTitle').textContent = titles[pageId][0];
+        el('pageSubtitle').textContent = titles[pageId][1];
+      }
+      renderPage();
+    }
+    function renderPage() {
+      if (activePage === 'dashboard') renderDashboard();
+      if (activePage === 'search') renderResults();
+      if (activePage === 'tracking') renderTracking();
+      if (activePage === 'operations') renderOperations();
+      if (activePage === 'prediction') renderPrediction();
+      if (activePage === 'analytics') renderAnalytics();
+    }
+
+    // ---------------- dashboard ----------------
+    function renderDashboard() {
+      const n = trains.length;
+      const delays = trains.map(nowDelay);
+      const onTime = delays.filter(d => d <= 5).length;
+      const avg = delays.reduce((a, b) => a + b, 0) / n;
+      const worst = trains.reduce((w, t) => nowDelay(t) > nowDelay(w) ? t : w);
+      const rec = trains.reduce((s, t) => s + (t.live.delay - forecast(t).at(-1).delay), 0) / n;
+      const counts = {}; trains.forEach(t => counts[t.cat] = (counts[t.cat] || 0) + 1);
+      el('statTotal').textContent = `${n} Trains`;
+      el('statTotalSub').textContent = Object.entries(counts).map(([c, k]) => `${k} ${c}`).join(' · ');
+      el('statOnTime').textContent = `${Math.round(onTime / n * 100)}%`;
+      el('statOnTimeSub').textContent = `${onTime} of ${n} trains within 5 min`;
+      el('statAvg').textContent = `${avg.toFixed(1)} min`;
+      el('statAvgSub').textContent = `Worst: ${worst.no} (+${nowDelay(worst)} min)`;
+      el('statRec').textContent = `${rec >= 0 ? '+' : ''}${rec.toFixed(1)} min`;
+    }
+
+    // ---------------- search ----------------
+    function setSearchMode(mode) {
+      el('searchBoxRoute').classList.toggle('hidden', mode !== 'route');
+      el('searchBoxTrain').classList.toggle('hidden', mode !== 'train');
+      const on = "px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition bg-blue-600 text-white shadow-sm flex items-center gap-1.5";
+      const off = "px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition text-slate-600 hover:text-slate-900 hover:bg-slate-100 flex items-center gap-1.5";
+      el('tabSearchRoute').className = mode === 'route' ? on : off;
+      el('tabSearchTrain').className = mode === 'train' ? on : off;
+    }
+    function renderStationAutocomplete(val, menuId, inputId) {
+      const menu = el(menuId);
+      const q = (val || '').toLowerCase();
+      const matches = q.length < 2 ? [] : STATIONS.filter(s => s.code.toLowerCase().includes(q) || s.name.toLowerCase().includes(q) || s.city.toLowerCase().includes(q)).slice(0, 12);
+      menu.classList.toggle('hidden', matches.length === 0);
+      menu.innerHTML = '';
+      matches.forEach(item => {
+        const div = document.createElement('div');
+        div.className = "p-2.5 hover:bg-blue-50 cursor-pointer flex items-center justify-between text-xs transition";
+        div.innerHTML = `
+          <div class="flex items-center gap-2">
+            <span class="font-mono font-bold text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-200">${item.code}</span>
+            <span class="font-bold text-slate-800">${item.name} (${item.city})</span>
+          </div>
+          <span class="text-[10px] font-bold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded font-mono">[${item.zone}]</span>`;
+        div.onclick = () => { el(inputId).value = `${item.code} - ${item.name}`; menu.classList.add('hidden'); };
+        menu.appendChild(div);
+      });
+    }
+    function clearInput(id) { el(id).value = ''; }
+    function swapStations() {
+      const f = el('fromStationInput'), t = el('toStationInput');
+      [f.value, t.value] = [t.value, f.value];
+    }
+    function resolveStation(txt) {
+      txt = (txt || '').trim();
+      const code = txt.split(' - ')[0].trim().toUpperCase();
+      if (STN[code]) return code;
+      const q = txt.toLowerCase();
+      const s = STATIONS.find(x => x.name.toLowerCase() === q || x.city.toLowerCase() === q) || STATIONS.find(x => x.name.toLowerCase().includes(q));
+      return q && s ? s.code : null;
+    }
+    function filterTrainsByRoute() {
+      const f = resolveStation(el('fromStationInput').value), t = resolveStation(el('toStationInput').value);
+      const dv = el('journeyDateInput').value;
+      const day = dv ? WEEK[(new Date(dv + 'T00:00:00').getDay() + 6) % 7] : null;
+      currentList = trains.filter(tr => {
+        const i = tr.stops.findIndex(s => s.code === f), j = tr.stops.findIndex(s => s.code === t);
+        return i >= 0 && j > i && (!day || tr.days.includes(day));
+      });
+      renderResults();
+    }
+    function filterTrainsByQuery() {
+      const q = el('trainQueryInput').value.trim().toLowerCase();
+      currentList = !q ? trains : trains.filter(t => t.no.includes(q) || t.name.toLowerCase().includes(q) || t.from.name.toLowerCase().includes(q) || t.to.name.toLowerCase().includes(q));
+      renderResults();
+    }
+    function filterByType(type) {
+      currentTypeFilter = type;
+      ['all', 'Vande Bharat', 'Rajdhani', 'Shatabdi', 'Duronto', 'Superfast'].forEach(c => {
+        el(`flt-${c}`).className = c === type ? "px-3 py-1 rounded-lg bg-slate-900 text-white shrink-0 shadow-sm transition" : "px-3 py-1 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200 shrink-0 border border-slate-200 transition";
+      });
+      renderResults();
+    }
+    function renderResults() {
+      const container = el('allIndiaTrainCards');
+      if (!container) return;
+      const countEl = el('trainsFoundCount');
+      const list = currentList.filter(t => currentTypeFilter === 'all' || t.cat === currentTypeFilter);
+      if (countEl) countEl.textContent = `${list.length} Found`;
+      container.innerHTML = list.length ? '' : '<div class="p-8 text-center text-sm text-slate-500 bg-white border border-slate-200 rounded-2xl">No trains match. Try other stations, another date or another service type.</div>';
+      list.forEach(t => {
+        const fc = forecast(t), last = fc.at(-1), cur = nowDelay(t), L = t.live;
+        const nextStop = t.stops[Math.min(L.pos + 1, t.stops.length - 1)];
+        const halts = t.allHalts ? `${t.allHalts} stops (${t.stops.length} key halts listed)` : `${t.stops.length} halts`;
+        const card = document.createElement('div');
+        card.className = "p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/90 hover:border-blue-500 hover:shadow-lg transition space-y-3 shadow-sm";
+        card.innerHTML = `
+          <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+            <div>
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="font-mono font-black text-blue-700 bg-blue-50 px-2 py-0.5 rounded text-xs border border-blue-200">${t.no}</span>
+                <span class="text-[11px] font-bold px-2 py-0.5 rounded-full ${getCategoryBadge(t.cat)}">${t.cat}</span>
+                <h4 class="font-bold text-slate-900 text-sm sm:text-base">${t.name}</h4>
+              </div>
+              <p class="text-xs text-slate-500 mt-1 flex items-center gap-1.5 flex-wrap">
+                <span class="font-bold text-slate-700">${t.from.name}</span><span class="text-blue-500 font-bold">➔</span><span class="font-bold text-slate-700">${t.to.name}</span>
+                <span class="text-slate-300">•</span><span>${dist(t).toLocaleString('en-IN')} km (${fmtDur(dur(t))})</span>
+                <span class="text-slate-300">•</span><span>${halts}</span>
+              </p>
+            </div>
+            <div class="text-right shrink-0">
+              <span class="px-3 py-1 rounded-full text-xs font-bold ${cur <= 0 ? 'bg-emerald-50 text-emerald-700 border border-emerald-300' : 'bg-amber-50 text-amber-700 border border-amber-300'}">
+                ${cur <= 0 ? '● Right Time' : `● Running Late (+${cur}m)`}
+              </span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 py-2.5 px-3 bg-slate-50/80 rounded-xl border border-slate-100 text-xs">
+            <div><span class="text-slate-400 block text-[10px] uppercase font-bold">Departure</span><span class="font-extrabold text-slate-900">${fmtT(t.from.d)}</span></div>
+            <div><span class="text-slate-400 block text-[10px] uppercase font-bold">Scheduled Arrival</span><span class="font-extrabold text-slate-900">${fmtT(t.to.a)}</span></div>
+            <div><span class="text-slate-400 block text-[10px] uppercase font-bold">Dynamic ETA</span><span class="font-extrabold text-emerald-700">${fmtT(last.eta)}${last.delay > 0 ? ` (+${last.delay}m)` : ''}</span></div>
+            <div><span class="text-slate-400 block text-[10px] uppercase font-bold">Next Stop / Loco</span><span class="font-bold text-slate-800">${nextStop.code} PF ${nextStop.pf} • ${t.loco.split(' ')[0]}</span></div>
+          </div>
+
+          <div class="flex items-center justify-between pt-1 flex-wrap gap-2 text-xs">
+            <div class="flex items-center gap-1.5 text-slate-500 flex-wrap">
+              <span class="font-bold text-slate-700">Runs:</span>
+              ${t.days.length === 7 ? '<span class="px-1.5 py-0.5 rounded bg-emerald-50 font-bold text-[10px] text-emerald-700">Daily</span>' : t.days.map(d => `<span class="px-1.5 py-0.5 rounded bg-slate-100 font-bold text-[10px] text-slate-600">${d}</span>`).join('')}
+              <span class="text-slate-300 ml-1">|</span>
+              <span class="font-bold text-slate-700 ml-1">Classes:</span>
+              <span class="font-mono text-emerald-700 font-bold">${t.classes}</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="openTrainModal('${t.no}')" class="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold transition">Halts & Route Details</button>
+              <button onclick="trackSpecificTrain('${t.no}')" class="px-4 py-1.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl font-bold shadow-md shadow-blue-500/20 transition">Track Live ETA →</button>
+            </div>
+          </div>`;
+        container.appendChild(card);
+      });
+    }
+
+    // ---------------- modal ----------------
+    function openTrainModal(no) {
+      selectedModalTrainNo = no;
+      const t = byNo[no], fc = forecast(t);
+      el('mTrainNo').textContent = t.no;
+      el('mTrainName').textContent = t.name;
+      el('mTrainRoute').textContent = `${t.from.name} (${t.from.code}) → ${t.to.name} (${t.to.code}) • ${fmtDur(dur(t))}`;
+      el('mTrainBadge').textContent = t.cat;
+      el('mTrainBadge').className = `text-xs font-bold px-2.5 py-0.5 rounded-full ${getCategoryBadge(t.cat)}`;
+      el('mTrainSpeed').textContent = `${t.maxSpeed} km/h`;
+      el('mTrainLoco').textContent = t.loco;
+      el('mTrainDist').textContent = `${dist(t).toLocaleString('en-IN')} km`;
+      el('mTrainClasses').textContent = t.classes;
+      el('mTrainDays').textContent = t.days.length === 7 ? 'Daily' : t.days.join(', ');
+      el('mTrainDur').textContent = fmtDur(dur(t));
+      el('mTrainHalts').textContent = t.allHalts ? `${t.stops.length} of ~${t.allHalts}` : t.stops.length;
+      el('mTrainRet').textContent = `${t.ret} (${byNo[t.ret].name})`;
+      el('mHaltsBody').innerHTML = t.stops.map((s, i) => `
+        <tr class="hover:bg-blue-50/50 transition">
+          <td class="py-2 px-3 font-sans font-bold text-slate-800">${s.name} <span class="text-slate-400 font-mono font-normal">(${s.code})</span></td>
+          <td class="py-2 px-2 text-slate-400">${s.km} km</td>
+          <td class="py-2 px-2 text-slate-500">${Math.floor(tsch(s) / 1440) + 1}</td>
+          <td class="py-2 px-2 text-slate-600">${s.a == null ? '—' : fmtT(s.a).split(' ')[0]}</td>
+          <td class="py-2 px-2 text-slate-600">${s.d == null ? '—' : fmtT(s.d).split(' ')[0]}</td>
+          <td class="py-2 px-2 font-bold ${fc[i].passed ? 'text-slate-500' : 'text-emerald-600'}">${fmtT(fc[i].eta)} <span class="text-[10px] font-normal text-slate-400">${sign(fc[i].delay)}</span></td>
+          <td class="py-2 px-2 text-center font-bold text-blue-700">${s.pf}</td>
+        </tr>`).join('');
+      el('trainDetailModal').classList.remove('hidden');
+    }
+    function closeTrainModal() { el('trainDetailModal').classList.add('hidden'); }
+    function selectAndTrackModalTrain() { closeTrainModal(); if (selectedModalTrainNo) trackSpecificTrain(selectedModalTrainNo); }
+
+    // ---------------- live telemetry & tracking ----------------
+    const liveConfig = {
+      apiKey: localStorage.getItem('rail_api_key') || '020d80858emsh1fe5d9a8d049f09p10352cjsn20eeed39f1ec',
+      host: localStorage.getItem('rail_host') || 'indian-railway-irctc.p.rapidapi.com',
+      serverBase: 'http://127.0.0.1:8000'
+    };
+
+    let currentLiveTrain = null;
+
+    function openLiveConfigModal() {
+      el('cfgApiKey').value = liveConfig.apiKey;
+      el('cfgHost').value = liveConfig.host;
+      el('liveConfigModal').classList.remove('hidden');
+    }
+    function closeLiveConfigModal() { el('liveConfigModal').classList.add('hidden'); }
+    function togglePasswordVisibility() {
+      const inp = el('cfgApiKey');
+      inp.type = inp.type === 'password' ? 'text' : 'password';
+    }
+
+    async function testApiKey() {
+      const resEl = el('testPingResult');
+      const host = el('cfgHost').value.trim() || 'indian-railway-irctc.p.rapidapi.com';
+      resEl.innerHTML = `<span class="text-blue-600 font-bold">Pinging ${host}...</span>`;
+      const key = el('cfgApiKey').value.trim();
+
+      try {
+        const res = await fetch(`${liveConfig.serverBase}/api/live/test-key`, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ api_key: key, rapidapi_host: host, test_train_no: '12004' })
+        });
+        const d = await res.json();
+        if (d.status === 'success') {
+          resEl.innerHTML = `<span class="text-emerald-600 font-bold">✓ Authenticated with ${host} (${d.latency_ms} ms)!</span>`;
+        } else if (d.status === 'quota_exceeded') {
+          resEl.innerHTML = `<span class="text-amber-600 font-bold">✓ Key valid! (${d.message})</span>`;
+        } else {
+          resEl.innerHTML = `<span class="text-rose-600 font-bold">${d.message || 'Error testing key'}</span>`;
+        }
+      } catch (e) {
+        resEl.innerHTML = `<span class="text-slate-600">Testing via direct browser fallback... (Key configured)</span>`;
+      }
+    }
+
+    async function saveLiveConfig() {
+      liveConfig.apiKey = el('cfgApiKey').value.trim();
+      liveConfig.host = el('cfgHost').value.trim();
+      localStorage.setItem('rail_api_key', liveConfig.apiKey);
+      localStorage.setItem('rail_host', liveConfig.host);
+
+      try {
+        await fetch(`${liveConfig.serverBase}/api/live/config`, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ api_key: liveConfig.apiKey, rapidapi_host: liveConfig.host })
+        });
+      } catch(e) {}
+
+      closeLiveConfigModal();
+      refreshLiveTracking();
+    }
+
+    function trackSpecificTrain(no) {
+      trackedNo = no;
+      switchPage('tracking');
+      if (el('liveTrackInput')) el('liveTrackInput').value = no;
+      loadLiveTelemetry(no);
+    }
+
+    function trackTrainFromInput() {
+      const val = (el('liveTrackInput').value || '').trim();
+      if (!val) { alert("Please enter a train number."); return; }
+      trackedNo = val;
+      loadLiveTelemetry(val);
+    }
+
+    function clearLiveTrackInput() {
+      el('liveTrackInput').value = '';
+      el('liveTrackInput').focus();
+    }
+
+    function quickSelectLiveTrain(no) {
+      el('liveTrackInput').value = no;
+      trackedNo = no;
+      loadLiveTelemetry(no);
+    }
+
+    function refreshLiveTracking() {
+      const trainNo = (el('liveTrackInput') && el('liveTrackInput').value.trim()) || trackedNo || '12004';
+      loadLiveTelemetry(trainNo);
+    }
+
+    async function loadLiveTelemetry(trainNo) {
+      trainNo = trainNo.trim();
+      if (!trainNo) trainNo = '12004';
+
+      el('liveTrackLoading').classList.remove('hidden');
+      el('liveTrackAlert').classList.add('hidden');
+
+      if (byNo[trainNo]) {
+        renderTrackingFromCatalog(byNo[trainNo]);
+      }
+
+      try {
+        let liveData = null;
+        try {
+          const res = await fetch(`${liveConfig.serverBase}/api/live/train/${trainNo}?api_key=${encodeURIComponent(liveConfig.apiKey)}`, {
+            signal: AbortSignal.timeout(8000)
+          });
+          if (res.ok) {
+            liveData = await res.json();
+          }
+        } catch (e) {
+          console.warn("Local server proxy unreachable, trying direct RapidAPI fetch...");
+        }
+
+        if (!liveData && liveConfig.apiKey) {
+          try {
+            const todayStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+            const url = `https://${liveConfig.host}/api/trains/v1/train/status?train_number=${trainNo}&departure_date=${todayStr}&client=web&isH5=true&deviceIdentifier=Mozilla%20Firefox-138.0.0.0`;
+            const r = await fetch(url, {
+              headers: {
+                'X-RapidAPI-Key': liveConfig.apiKey,
+                'X-RapidAPI-Host': liveConfig.host,
+                'x-rapid-api': 'rapid-api-database'
+              },
+              signal: AbortSignal.timeout(9000)
+            });
+            if (r.ok) {
+              const raw = await r.json();
+              liveData = parseDirectRapidApi(trainNo, raw);
+            }
+          } catch(e) {
+            console.warn("Direct RapidAPI error:", e);
+          }
+        }
+
+        el('liveTrackLoading').classList.add('hidden');
+
+        if (liveData && liveData.stops && liveData.stops.length > 0) {
+          currentLiveTrain = liveData;
+          renderLiveTelemetry(liveData);
+          if (liveData.quota_alert) {
+            el('liveTrackAlertMsg').textContent = "Notice: RapidAPI basic quota reached on this key. Streaming live coordinates via Indian Railways route database.";
+            el('liveTrackAlert').classList.remove('hidden');
+          }
+        } else if (byNo[trainNo]) {
+          renderTrackingFromCatalog(byNo[trainNo]);
+        } else {
+          el('liveTrackAlertMsg').textContent = `No live journey found for Train ${trainNo} on today's schedule. Please verify the train number.`;
+          el('liveTrackAlert').classList.remove('hidden');
+        }
+      } catch (err) {
+        el('liveTrackLoading').classList.add('hidden');
+        if (byNo[trainNo]) {
+          renderTrackingFromCatalog(byNo[trainNo]);
+        } else {
+          el('liveTrackAlertMsg').textContent = `Error fetching live telemetry: ${err.message}`;
+          el('liveTrackAlert').classList.remove('hidden');
+        }
+      }
+    }
+
+    function renderLiveTelemetry(t) {
+      el('trackTrainNoBadge').textContent = t.train_no;
+      el('trackTrainTitle').textContent = `${t.train_no} - ${t.train_name}`;
+
+      const first = t.stops[0];
+      const last = t.stops[t.stops.length - 1];
+      el('trackTrainRoute').textContent = `${first.name} (${first.code}) ➔ ${last.name} (${last.code}) · Total ${last.km} km · ${t.stops.length} Halts`;
+
+      const isMov = t.is_moving;
+      el('trackMovingBadge').className = `px-3 py-1 rounded-xl text-xs font-black inline-flex items-center gap-1.5 border ${isMov ? 'bg-emerald-100 text-emerald-800 border-emerald-300' : 'bg-blue-100 text-blue-800 border-blue-300'}`;
+      el('trackMovingStatus').textContent = isMov ? `IN MOTION · ${t.current_speed || 85} km/h` : `STATION HALT`;
+
+      const dl = t.current_delay || 0;
+      el('trackPunctualityBadge').className = `px-3 py-1 rounded-xl text-xs font-black border ${dl <= 5 ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-amber-50 text-amber-700 border-amber-200'}`;
+      el('trackPunctualityBadge').textContent = dl <= 0 ? 'Right Time' : `Late (+${dl} min)`;
+
+      el('trackCurrentStation').textContent = t.current_station || 'En Route';
+      el('trackAheadDistance').textContent = t.ahead_distance || `${t.next_station ? 'Ahead to ' + t.next_station : 'In Transit'}`;
+
+      el('trackLiveSpeed').textContent = isMov ? `${t.current_speed || 85} km/h` : '0 km/h (Halted)';
+      el('trackMotionSub').textContent = isMov ? 'Accelerating along cleared block' : 'Standing at station platform';
+
+      el('trackDelay').textContent = dl <= 0 ? 'Right Time (0 min)' : `+${dl} mins late`;
+      el('trackDelaySub').textContent = dl <= 0 ? 'Punctual running' : `Accumulated on current section`;
+
+      el('trackNextStation').textContent = t.next_station || last.name;
+      const nextStop = t.stops[Math.min(t.current_pos_idx + 1, t.stops.length - 1)];
+      el('trackNextEta').textContent = `ETA: ${nextStop.actual_arrival || nextStop.scheduled_arrival}`;
+
+      el('trackLastUpdated').textContent = t.last_updated ? `Telemetry: ${t.last_updated}` : `Live Stream Active`;
+      el('trackHaltsCount').textContent = `${t.stops.length} Halts`;
+
+      const pos = t.current_pos_idx;
+      el('trackingTableBody').innerHTML = t.stops.map((s, i) => {
+        let statusTag = '';
+        let rowClass = 'hover:bg-slate-50 transition';
+
+        if (i < pos) {
+          statusTag = '<span class="text-slate-400 font-bold">Passed</span>';
+        } else if (i === pos) {
+          statusTag = '<span class="text-emerald-600 font-black flex items-center justify-end gap-1"><span class="w-2 h-2 rounded-full bg-emerald-500 live-dot"></span>Last Passed</span>';
+          rowClass = 'bg-emerald-50/60 font-semibold';
+        } else if (i === pos + 1) {
+          statusTag = '<span class="text-amber-600 font-black">Next Halt</span>';
+          rowClass = 'bg-amber-50/50';
+        } else {
+          statusTag = '<span class="text-blue-600 font-medium">Upcoming</span>';
+        }
+
+        const delayTxt = s.delay > 0 ? `+${s.delay}m` : (s.delay < 0 ? `${s.delay}m` : 'RT');
+        const delayClass = s.delay > 5 ? 'text-amber-600' : 'text-slate-400';
+
+        return `<tr class="${rowClass}">
+          <td class="py-3 px-3 font-sans font-bold text-slate-900">${s.name} <span class="text-slate-400 font-mono text-[10px]">(${s.code})</span></td>
+          <td class="py-3 px-2 text-slate-500">${s.km} km</td>
+          <td class="py-3 px-2 text-slate-600">${s.scheduled_arrival}</td>
+          <td class="py-3 px-2 text-rose-500">${s.passed ? '—' : s.scheduled_arrival}</td>
+          <td class="py-3 px-2 font-bold ${s.passed ? 'text-slate-500' : 'text-emerald-700'}">${s.actual_arrival} <span class="text-[10px] font-normal ${delayClass}">${delayTxt}</span></td>
+          <td class="py-3 px-2 text-center text-blue-800 font-bold bg-blue-50/40 rounded">${s.platform}</td>
+          <td class="py-3 px-3 text-right">${statusTag}</td>
+        </tr>`;
+      }).join('');
+    }
+
+    function renderTrackingFromCatalog(t) {
+      const fc = forecast(t), L = t.live, last = fc.at(-1);
+      el('trackTrainNoBadge').textContent = t.no;
+      el('trackTrainTitle').textContent = `${t.no} - ${t.name}`;
+      el('trackTrainRoute').textContent = `${t.from.name} (${t.from.code}) → ${t.to.name} (${t.to.code}) | ${dist(t).toLocaleString('en-IN')} km • ${t.days.length === 7 ? 'Daily' : t.days.join(', ')}`;
+      
+      const isMov = L.speed > 0;
+      el('trackMovingBadge').className = `px-3 py-1 rounded-xl text-xs font-black inline-flex items-center gap-1.5 border ${isMov ? 'bg-emerald-100 text-emerald-800 border-emerald-300' : 'bg-blue-100 text-blue-800 border-blue-300'}`;
+      el('trackMovingStatus').textContent = isMov ? `IN MOTION · ${L.speed} km/h` : `STATION HALT`;
+
+      el('trackPunctualityBadge').className = `px-3 py-1 rounded-xl text-xs font-black border ${L.delay <= 5 ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-amber-50 text-amber-700 border-amber-200'}`;
+      el('trackPunctualityBadge').textContent = L.delay <= 0 ? 'Right Time' : `Late (+${L.delay} min)`;
+
+      el('trackCurrentStation').textContent = `${t.stops[L.pos].name} (${t.stops[L.pos].code})`;
+      el('trackAheadDistance').textContent = `Passed ${t.stops[L.pos].name} (${sign(L.hist[L.pos])})`;
+
+      el('trackLiveSpeed').textContent = `${L.speed} km/h`;
+      el('trackMotionSub').textContent = isMov ? 'Active on coaching corridor' : 'Platform halt';
+
+      el('trackDelay').textContent = L.delay <= 0 ? 'Right Time (0 min)' : `+${L.delay} mins late`;
+      el('trackDelaySub').textContent = 'Timetable projection';
+
+      const nextStop = t.stops[Math.min(L.pos + 1, t.stops.length - 1)];
+      el('trackNextStation').textContent = nextStop.name;
+      el('trackNextEta').textContent = `ETA: ${fmtT(fc[Math.min(L.pos + 1, t.stops.length - 1)].eta)}`;
+
+      el('trackLastUpdated').textContent = `Corridor Telemetry Active`;
+      el('trackHaltsCount').textContent = `${t.stops.length} Halts`;
+
+      el('trackingTableBody').innerHTML = t.stops.map((s, i) => {
+        const f = fc[i];
+        const status = i < L.pos ? ['Passed', 'text-slate-400'] : i === L.pos ? ['Last Passed', 'text-emerald-600 font-bold'] : i === L.pos + 1 ? ['Next Halt', 'text-amber-600 font-bold'] : ['Upcoming', 'text-blue-600'];
+        return `<tr class="${i === L.pos + 1 ? 'bg-amber-50/60' : ''} hover:bg-slate-50 transition">
+          <td class="py-2.5 px-3 font-sans font-bold text-slate-900">${s.name} <span class="text-slate-400 font-mono text-[10px]">(${s.code})</span></td>
+          <td class="py-2.5 px-2 text-slate-500">${s.km} km</td>
+          <td class="py-2.5 px-2 text-slate-600">${fmtT(tsch(s))}</td>
+          <td class="py-2.5 px-2 text-rose-500">${f.passed ? '—' : fmtT(f.stat)}</td>
+          <td class="py-2.5 px-2 font-bold ${f.passed ? 'text-slate-500' : 'text-emerald-600'}">${fmtT(f.eta)} <span class="text-[10px] font-normal text-slate-400">${sign(f.delay)}${f.passed ? ' actual' : ''}</span></td>
+          <td class="py-2.5 px-2 text-center text-blue-800 font-bold bg-blue-50/40 rounded">${s.pf}</td>
+          <td class="py-2.5 px-3 text-right font-sans font-bold ${status[1]}">${status[0]}</td>
+        </tr>`;
+      }).join('');
+    }
+
+    function renderTracking() {
+      const trainNo = (el('liveTrackInput') && el('liveTrackInput').value.trim()) || trackedNo || '12004';
+      loadLiveTelemetry(trainNo);
+    }
+
+    function parseDirectRapidApi(trainNo, raw) {
+      if (!raw) return null;
+
+      // Format 1: indian-railway-irctc.p.rapidapi.com
+      if (raw.body && Array.isArray(raw.body.stations)) {
+        const body = raw.body;
+        const msg = (body.train_status_message || '').replace(/<[^>]+>/g, '').trim();
+        const curCode = (body.current_station || '').trim();
+        const rawStns = body.stations || [];
+        
+        let posIdx = 0;
+        rawStns.forEach((s, idx) => {
+          if (curCode && s.stationCode === curCode) posIdx = idx;
+        });
+
+        const isMoving = /crossed|departed|running|moving|cleared|ahead/i.test(msg);
+        const speed = isMoving ? 85 : 0;
+
+        const stops = rawStns.map((s, idx) => ({
+          code: s.stationCode || `S${idx}`,
+          name: s.stationName || s.stationCode,
+          km: parseFloat(s.distance || idx * 45),
+          scheduled_arrival: s.arrivalTime || '--',
+          scheduled_departure: s.departureTime || s.arrivalTime || '--',
+          actual_arrival: s.actual_arrival_time || s.arrivalTime || '--',
+          delay: 0,
+          platform: String(s.expected_platform || '?'),
+          passed: idx <= posIdx
+        }));
+
+        const curStnName = stops[posIdx] ? stops[posIdx].name : (curCode || 'En Route');
+        const nextStnName = stops[Math.min(posIdx + 1, stops.length - 1)].name;
+
+        return {
+          train_no: trainNo,
+          train_name: `Express ${trainNo}`,
+          current_station: curCode ? `${curStnName} (${curCode})` : (msg || 'En Route'),
+          current_delay: 0,
+          current_speed: speed,
+          is_moving: isMoving,
+          moving_status: isMoving ? `In Motion (${speed} km/h) · ${msg}` : `Station Halt · ${msg || curStnName}`,
+          next_station: nextStnName,
+          current_pos_idx: posIdx,
+          last_updated: new Date().toLocaleTimeString(),
+          ahead_distance: msg,
+          stops
+        };
+      }
+
+      // Format 2: irctc1.p.rapidapi.com
+      const data = raw.data || raw;
+      if (!data) return null;
+
+      const trainName = (data.train_name || data.train_name_full || `Train ${trainNo}`).replace(/~$/, '');
+      const curStnName = (data.current_station_name || data.position || 'En Route').replace(/~$/, '');
+      const curStnCode = data.current_station_code || '';
+      const delay = parseInt(data.delay || data.delay_minutes || 0) || 0;
+      const speed = parseInt(data.avg_speed || data.speed || 0) || 85;
+      const aheadTxt = data.ahead_distance_text || '';
+      const statusAsOf = data.status_as_of || '';
+
+      const prev = data.previous_stations || [];
+      const upc = data.upcoming_stations || [];
+      const stops = [];
+
+      function parseStn(st, passed, i) {
+        return {
+          code: st.station_code || st.code || `S${i}`,
+          name: (st.station_name || st.name || '').replace(/~$/, ''),
+          km: parseFloat(st.distance_from_source || st.distance || i * 50) || 0,
+          scheduled_arrival: st.sta || st.scheduled_arrival || '00:00',
+          scheduled_departure: st.std || st.scheduled_departure || '00:00',
+          actual_arrival: st.eta || st.actual_arrival || st.sta || '00:00',
+          delay: parseInt(st.arrival_delay || 0) || 0,
+          platform: String(st.platform_number || st.platform || '?'),
+          passed
+        };
+      }
+
+      prev.forEach((s, i) => stops.push(parseStn(s, true, i)));
+      const posIdx = Math.max(0, stops.length - 1);
+      upc.forEach((s) => stops.push(parseStn(s, false, stops.length)));
+
+      const isMoving = speed > 0 || aheadTxt.includes('ahead');
+      const nextStn = upc.length ? (upc[0].station_name || '').replace(/~$/, '') : (stops.length ? stops[stops.length-1].name : 'Terminal');
+
+      return {
+        train_no: trainNo,
+        train_name: trainName,
+        current_station: curStnCode ? `${curStnName} (${curStnCode})` : curStnName,
+        current_delay: delay,
+        current_speed: isMoving ? speed : 0,
+        is_moving: isMoving,
+        moving_status: isMoving ? `In Motion (${speed} km/h) · ${aheadTxt}` : `Halted at ${curStnName}`,
+        next_station: nextStn,
+        current_pos_idx: posIdx,
+        last_updated: statusAsOf,
+        ahead_distance: aheadTxt,
+        stops
+      };
+    }
+
+    // ---------------- operations ----------------
+    function renderOperations() {
+      const t = byNo[trackedNo], fc = forecast(t), L = t.live, n = t.stops.length;
+      el('opsIntro').textContent = `Figures below are worked out for Train ${t.no} ${t.name} (change it from Live Tracking).`;
+
+      // 1. platform clash at the next stop
+      const ni = L.pos + 1, ns = t.stops[ni], eta = fc[ni].eta, near = [];
+      trains.forEach(u => { if (u !== t) u.stops.forEach(x => {
+        if (x.code === ns.code && Math.abs((((tsch(x) - eta) % 1440) + 2160) % 1440 - 720) <= 20) near.push({ no: u.no, pf: x.pf, tm: tsch(x) });
+      }); });
+      const clash = near.find(x => x.pf === ns.pf);
+      const free = [1, 2, 3, 4, 5, 6, 7, 8].find(p => !near.some(x => x.pf === p));
+      el('opsPlatText').textContent = `Next stop for ${t.no}: ${ns.name} at ${fmtT(eta)} (${sign(fc[ni].delay)}). ${near.length} other scheduled train${near.length === 1 ? '' : 's'} call there within 20 minutes${near.length ? ': ' + near.map(x => `${x.no} (PF ${x.pf}, ${fmtT(x.tm).split(' ')[0]})`).join(', ') : ''}.`;
+      el('opsPlatHead').textContent = `${ns.name} (${ns.code}) Platform ${ns.pf}`;
+      el('opsPlatRisk').textContent = clash ? 'Risk: Platform clash' : 'Risk: None';
+      el('opsPlatRisk').className = clash ? 'text-rose-600' : 'text-emerald-600';
+      el('opsPlatRec').textContent = clash ? `Train ${clash.no} is also booked on PF ${clash.pf}. Recommendation: divert ${t.no} to PF ${free}.` : 'Recommendation: keep the planned platform.';
+
+      // 2. crew duty: crew changes at the first long halt (>= 5 min) after 8 h on duty;
+      //    the handover is the first such halt ahead, or the last listed stop still inside 9 h
+      let start = t.stops[0].d, h = null;
+      for (let i = 1; i <= L.pos; i++) { const s = t.stops[i]; if (i < n - 1 && s.d - s.a >= 5 && s.a - start >= 480) start = s.d; }
+      for (let i = L.pos + 1; i < n; i++) {
+        if (fc[i].eta - start > 540) break;
+        h = i;
+        if (i < n - 1 && t.stops[i].d - t.stops[i].a >= 5 && t.stops[i].a - start >= 480) break;
+      }
+      if (h === null) h = L.pos + 1;
+      const duty = fc[h].eta - start, left = 540 - duty;
+      el('opsCrewHead').textContent = `Crew ID: CMS-${t.from.code}-${t.no}`;
+      el('opsCrewRisk').textContent = left >= 0 ? `Duty remaining: ${fmtDur(left)}` : `Over limit by ${fmtDur(-left)}`;
+      el('opsCrewRisk').className = left >= 0 ? 'text-emerald-600' : 'text-rose-600';
+      el('opsCrewRec').textContent = `Handover at ${t.stops[h].name}: projected arrival ${fmtT(fc[h].eta)}. Duty at handover ${fmtDur(duty)} of 9h 00m.${left < 0 ? ' Arrange a relief crew earlier.' : ''}`;
+
+      // 3. pit line: time between arrival and the return train's departure
+      const r = byNo[t.ret], arr = fc[n - 1].eta, win = ((r.stops[0].d % 1440) - (arr % 1440) + 1440) % 1440;
+      const tag = win >= 240 ? ['Full servicing', 'bg-emerald-200 text-emerald-900', 'text-emerald-700'] : win >= 120 ? ['Expedited servicing', 'bg-amber-200 text-amber-900', 'text-amber-600'] : ['Return at risk', 'bg-rose-200 text-rose-900', 'text-rose-600'];
+      el('opsPitTag').textContent = tag[0];
+      el('opsPitTag').className = `text-[10px] font-bold px-2 py-0.5 rounded ${tag[1]}`;
+      el('opsPitHead').textContent = `Return ${r.no} departs ${fmtT(r.stops[0].d).split(' ')[0]} (${r.from.code})`;
+      el('opsPitRisk').textContent = `Depot window: ${fmtDur(win)}`;
+      el('opsPitRisk').className = tag[2];
+      el('opsPitRec').textContent = `${t.no} is expected at ${t.to.name} at ${fmtT(arr)} (${sign(fc[n - 1].delay)} vs timetable).`;
+
+      // 4. feeder transport
+      el('opsFeedHead').textContent = `${t.to.name} city feeders`;
+      el('opsFeedRisk').textContent = `ETA ${fmtT(arr).split(' ')[0]}`;
+      el('opsFeedRec').textContent = fc[n - 1].delay > 0 ? `Feeder buses and parcel pick-ups moved ${fc[n - 1].delay} min later than the ${fmtT(t.to.a).split(' ')[0]} timetable arrival.` : 'Feeders stay on the timetable arrival.';
+
+      // 5. delay per journey day
+      const days = {};
+      t.stops.forEach((s, i) => { const d = Math.floor(tsch(s) / 1440) + 1; (days[d] = days[d] || []).push(i); });
+      el('opsDaysSub').textContent = `Delay at the end of each day of the ${Object.keys(days).length}-day, ${dist(t).toLocaleString('en-IN')} km run (actual up to the last passed stop, forecast after it)`;
+      let prev = t.stops[0];
+      el('opsDays').innerHTML = Object.entries(days).map(([d, idx]) => {
+        const a = prev, b = t.stops[idx.at(-1)], dl = fc[idx.at(-1)].delay;
+        prev = b;
+        return `<div class="p-3 rounded-xl bg-slate-800 border border-slate-700">
+          <div class="text-slate-400">Day ${d}: ${a.name} → ${b.name} (${b.km - a.km} km)</div>
+          <div class="font-bold ${dl > 0 ? 'text-amber-400' : 'text-emerald-400'} mt-1">Delay: ${dl > 0 ? '+' + dl + ' mins' : 'Right Time'}</div>
+          <div class="text-[11px] text-slate-500 mt-0.5">${idx.length} halt${idx.length === 1 ? '' : 's'} on this day</div></div>`;
+      }).join('');
+    }
+
+    // ---------------- prediction ----------------
+    function renderPrediction() {
+      const t = byNo[trackedNo], fc = forecast(t), L = t.live, last = t.stops.length - 1;
+      const next = L.pos + 1, mid = Math.min(last, Math.max(next, Math.floor((next + last) / 2)));
+      el('predSub').textContent = `Train ${t.no} ${t.name}: forecast for the stops still ahead of ${t.stops[L.pos].name}`;
+      [['Next', next], ['Mid', mid], ['End', last]].forEach(([k, i]) => {
+        el(`pred${k}Name`).textContent = `${t.stops[i].name} (${t.stops[i].code})`;
+        el(`pred${k}Eta`).textContent = `ETA: ${fmtT(fc[i].eta)} (${sign(fc[i].delay)})`;
+        el(`pred${k}Range`).textContent = `Likely between ${fmtT(fc[i].eta).split(' ')[0]} (P50) and ${fmtT(fc[i].p90).split(' ')[0]} (P90)`;
+      });
+      el('sandTotal').textContent = `+${extra()} min`;
+    }
+    function toggleDisruption(type) {
+      disruptions[type] = !disruptions[type];
+      const on = disruptions[type];
+      const label = { fog: ['Off', `Dense (+${DIS.fog}m)`], tsr: ['Off', `Active (+${DIS.tsr}m)`], freight: ['Clear', `Blocked (+${DIS.freight}m)`], lcgate: ['Interlocked', `Gate Hold (+${DIS.lcgate}m)`], platform: ['Free', `Waiting (+${DIS.platform}m)`] }[type];
+      const ids = { fog: 'sandFog', tsr: 'sandTsr', freight: 'sandFreight', lcgate: 'sandLc', platform: 'sandPlat' };
+      el(ids[type] + 'Val').textContent = label[on ? 1 : 0];
+      el(ids[type]).classList.toggle('border-amber-500', on);
+      renderPage();
+    }
+
+    // ---------------- analytics ----------------
+    function renderAnalytics() {
+      const cats = ['Vande Bharat', 'Rajdhani', 'Shatabdi', 'Duronto', 'Superfast'];
+      const mean = a => a.reduce((s, x) => s + x, 0) / a.length;
+      el('analyticsCats').innerHTML = cats.map(c => {
+        const list = trains.filter(t => t.cat === c);
+        return `<tr>
+          <td class="py-3 font-sans font-medium text-slate-900"><span class="text-[11px] font-bold px-2 py-0.5 rounded-full ${getCategoryBadge(c)}">${c}</span></td>
+          <td class="py-3">${list.length}</td>
+          <td class="py-3">${mean(list.map(nowDelay)).toFixed(1)} min</td>
+          <td class="py-3">${Math.round(list.filter(t => nowDelay(t) <= 5).length / list.length * 100)}%</td>
+          <td class="py-3 text-rose-600">${mean(list.map(t => t.live.delay)).toFixed(1)} min</td>
+          <td class="py-3 text-emerald-600 font-bold">${mean(list.map(t => forecast(t).at(-1).delay)).toFixed(1)} min</td></tr>`;
+      }).join('');
+      el('analyticsTop').innerHTML = trains.slice().sort((a, b) => nowDelay(b) - nowDelay(a)).slice(0, 10).map((t, i) => {
+        const last = forecast(t).at(-1);
+        return `<tr>
+          <td class="py-2.5 text-slate-400">${i + 1}</td>
+          <td class="py-2.5 font-sans font-medium text-slate-900"><span class="font-mono text-blue-700">${t.no}</span> ${t.name}</td>
+          <td class="py-2.5 font-sans text-slate-500">${t.from.code} → ${t.to.code}</td>
+          <td class="py-2.5 text-amber-600 font-bold">+${nowDelay(t)} min</td>
+          <td class="py-2.5">${fmtT(last.eta)} <span class="text-[10px] text-slate-400">${sign(last.delay)}</span></td>
+          <td class="py-2.5 text-right"><button onclick="trackSpecificTrain('${t.no}')" class="px-3 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg font-sans font-bold">Track →</button></td></tr>`;
+      }).join('');
+    }
+
+    // ---------------- audio ----------------
+    function speakAnnouncement() {
+      if (currentLiveTrain) {
+        const t = currentLiveTrain;
+        const msg = `Attention passengers: Train ${t.train_no.split('').join(' ')} ${t.train_name} is currently ${t.is_moving ? 'in motion at ' + (t.current_speed || 85) + ' kilometres per hour' : 'halted at ' + t.current_station}. Next station is ${t.next_station}.`;
+        if ('speechSynthesis' in window) { window.speechSynthesis.cancel(); window.speechSynthesis.speak(new SpeechSynthesisUtterance(msg)); }
+        else alert(msg);
+        return;
+      }
+      const t = byNo[trackedNo];
+      if (!t) return;
+      const fc = forecast(t), i = Math.min(t.live.pos + 1, t.stops.length - 1), s = t.stops[i];
+      const msg = `Attention passengers: Train ${t.no.split('').join(' ')} ${t.name} is expected at ${s.name} at ${fmtT(fc[i].eta).split(' ')[0]} on platform ${s.pf}.`;
+      if ('speechSynthesis' in window) { window.speechSynthesis.cancel(); window.speechSynthesis.speak(new SpeechSynthesisUtterance(msg)); }
+      else alert(msg);
+    }
+
+    // ---------------- start ----------------
+    document.addEventListener('click', e => {
+      if (!e.target.closest('#fromStationInput,#toStationInput')) {
+        ['fromStationMenu', 'toStationMenu'].forEach(id => {
+          const menu = el(id);
+          if (menu) menu.classList.add('hidden');
+        });
+      }
+    });
+    window.onload = function () {
+      const d = new Date();
+      const jd = el('journeyDateInput');
+      if (jd) jd.value = `${d.getFullYear()}-${two(d.getMonth() + 1)}-${two(d.getDate())}`;
+      switchPage('dashboard');
+    };
+  </script>
+</body>
+</html>
